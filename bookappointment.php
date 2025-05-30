@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <?php session_start(); ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='--select-button-svg: url(&apos;data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(197,162,150)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e&apos;); font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -55,86 +56,108 @@
               >
                 <span class="truncate">Book now</span>
               </button>
-              <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-              >
-                <span class="truncate">Log in</span>
-              </button>
+              <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                  <span class="truncate">Logout</span>
+                </a>
+                <!-- Optionally display username:
+                <p class="text-white text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
+                -->
+              <?php else: ?>
+                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                  <span class="truncate">Log In</span>
+                </a>
+              <?php endif; ?>
             </div>
           </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
+          <form id="bookingForm" action="php/api/book_appointment.php" method="POST" class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
             <h2 class="text-white tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Book an appointment</h2>
+            <div id="bookingMessages" class="mt-2 mb-4 px-4 text-center"></div> <!-- Added booking messages div -->
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <select
+                  id="barberSelect"
+                  name="barber_id"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 bg-[image:--select-button-svg] placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  required
                 >
-                  <option value="one">Select a barber</option>
-                  <option value="two">two</option>
-                  <option value="three">three</option>
+                  <option value="">Select a barber</option>
+                  <!-- Barbers will be populated here by JavaScript -->
                 </select>
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <select
+                  id="serviceSelect"
+                  name="service_id"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 bg-[image:--select-button-svg] placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  required
                 >
-                  <option value="one">Select a service</option>
-                  <option value="two">two</option>
-                  <option value="three">three</option>
+                  <option value="">Select a service</option>
+                  <!-- Services will be populated here by JavaScript -->
                 </select>
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <select
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 bg-[image:--select-button-svg] placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                >
-                  <option value="one">Select a date and time</option>
-                  <option value="two">two</option>
-                  <option value="three">three</option>
-                </select>
+                <!-- Basic date input for now. Will be enhanced later. -->
+                <input
+                  type="datetime-local"
+                  id="appointment_datetime"
+                  name="appointment_datetime"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  required
+                />
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <input
+                  type="text"
+                  name="customer_name"
                   placeholder="Your name"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value=""
+                  value="<?php echo isset($_SESSION['user_name']) ? htmlspecialchars($_SESSION['user_name']) : ''; ?>"
+                  required
                 />
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <input
+                  type="email"
+                  name="customer_email"
                   placeholder="Your email"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value=""
+                  value="<?php echo isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : ''; ?>"
+                  required
                 />
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <input
+                  type="tel"
+                  name="customer_phone"
                   placeholder="Your phone number"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value=""
+                  required
                 />
               </label>
             </div>
             <div class="flex px-4 py-3">
               <button
+                type="submit"
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 flex-1 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
               >
                 <span class="truncate">Book appointment</span>
               </button>
             </div>
-            <p class="text-[#c5a296] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">Already have an account? Log in</p>
-          </div>
+            <p class="text-[#c5a296] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">Already have an account? <a href="login.php" class="underline">Log in</a></p>
+          </form>
         </div>
         <footer class="flex justify-center">
           <div class="flex max-w-[960px] flex-1 flex-col">
@@ -180,4 +203,123 @@
       </div>
     </div>
   </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const barberSelect = document.getElementById('barberSelect');
+        const serviceSelect = document.getElementById('serviceSelect');
+        const bookingForm = document.getElementById('bookingForm');
+        const bookingMessagesDiv = document.getElementById('bookingMessages');
+
+        // Function to display messages
+        function displayMessage(html, type) {
+            bookingMessagesDiv.innerHTML = html;
+            if (type === 'success') {
+                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-green-500';
+            } else if (type === 'error') {
+                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-red-500';
+            } else {
+                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-gray-300'; // Neutral
+            }
+        }
+
+        // Fetch Barbers
+        fetch('php/api/get_barbers.php')
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('API error fetching barbers:', data.error);
+                    barberSelect.innerHTML = '<option value="">Error loading barbers</option>'; // Clear and set error
+                    return;
+                }
+                if (Array.isArray(data)) {
+                    data.forEach(barber => {
+                        const option = document.createElement('option');
+                        option.value = barber.id;
+                        option.textContent = barber.name + (barber.specialty ? ` - ${barber.specialty}` : '');
+                        barberSelect.appendChild(option);
+                    });
+                } else {
+                     console.error('Unexpected data format for barbers:', data);
+                     barberSelect.innerHTML = '<option value="">Error loading barbers format</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Network error fetching barbers:', error);
+                barberSelect.innerHTML = '<option value="">Network error loading barbers</option>';
+            });
+
+        // Fetch Services
+        fetch('php/api/get_services.php')
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('API error fetching services:', data.error);
+                    serviceSelect.innerHTML = '<option value="">Error loading services</option>';
+                    return;
+                }
+                if (Array.isArray(data)) {
+                    data.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        let price = parseFloat(service.price).toFixed(2);
+                        option.textContent = `${service.name} (${service.duration_minutes} min) - $${price}`;
+                        serviceSelect.appendChild(option);
+                    });
+                } else {
+                    console.error('Unexpected data format for services:', data);
+                    serviceSelect.innerHTML = '<option value="">Error loading services format</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Network error fetching services:', error);
+                serviceSelect.innerHTML = '<option value="">Network error loading services</option>';
+            });
+
+        // Handle Form Submission
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                displayMessage('<p>Processing...</p>', 'neutral'); // Clear previous messages and show processing
+
+                const formData = new FormData(bookingForm);
+
+                fetch('php/api/book_appointment.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayMessage(`<p>${data.message}</p>`, 'success');
+                        bookingForm.reset();
+                        // Optionally, repopulate dynamic fields or clear them if needed after reset
+                        // For now, a full page refresh or navigating away might be simpler for user
+                        // Or just leave form cleared.
+                    } else if (data.errors) {
+                        let errorHtml = '<ul>';
+                        for (const field in data.errors) {
+                            errorHtml += `<li>${data.errors[field]}</li>`;
+                        }
+                        errorHtml += '</ul>';
+                        displayMessage(errorHtml, 'error');
+                    } else if (data.error) {
+                        displayMessage(`<p>${data.error}</p>`, 'error');
+                    } else {
+                        displayMessage('<p>An unknown error occurred.</p>', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Booking submission error:', error);
+                    displayMessage('<p>Could not submit booking. Please check your connection and try again.</p>', 'error');
+                });
+            });
+        }
+    });
+  </script>
 </html>

@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <?php session_start(); ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -76,10 +77,18 @@
             >
               <span class="truncate">Book Now</span>
             </button>
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDdgZW9A4wEUePhTM2-6xN4V7j1KtcBeHc_izESsdUQAkFPwMU1PJsJJe9tw3-DJxj-WqNLmlwEAfAReuTd3tW6eWkmAYYtgyKyJ_XuehlzQkjLq77bpzJQe93RZ26WbgKgUXYM3Vqtp_Vzjio35kMssaEcSVdT5itY0y0-SS6pQRb7j2Bsa-cyVHZ-5akLzKKPLDsg4d9V5R-E0t9qg8S_KO4vRZOkv660ACyW_wln3WOcMEDq10-8FgsQ04lg4Fk8wkEI9tsnyA");'
-            ></div>
+            <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <span class="truncate">Logout</span>
+              </a>
+              <!-- Optionally, if you want to keep avatar when logged in:
+              <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("USER_AVATAR_URL_FROM_SESSION_OR_DEFAULT");'></div>
+              -->
+            <?php else: ?>
+              <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <span class="truncate">Log In</span>
+              </a>
+            <?php endif; ?>
           </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">
