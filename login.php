@@ -14,9 +14,21 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <?php
+    session_start(); // Start session to access session variables
+
+    if (isset($_SESSION['message'])) {
+        echo '<p style="color: green; text-align: center; margin-top: 10px;">' . $_SESSION['message'] . '</p>';
+        unset($_SESSION['message']); // Clear the message after displaying
+    }
+    if (isset($_SESSION['error'])) {
+        echo '<p style="color: red; text-align: center; margin-top: 10px;">' . $_SESSION['error'] . '</p>';
+        unset($_SESSION['error']); // Clear the error after displaying
+    }
+    ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
-      style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
+      style='--checkbox-tick-svg: url(&apos;data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(255,255,255)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e&apos;); font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
     >
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#452e26] px-10 py-3">
@@ -46,67 +58,70 @@
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal" href="#">Services</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Barbers</a>
+              <a class="text-white text-sm font-medium leading-normal" href="#">Locations</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
             </div>
-            <button
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-            >
-              <span class="truncate">Log in</span>
-            </button>
+            <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <span class="truncate">Logout</span>
+              </a>
+            <?php else: ?>
+              <a href="createanaccount.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <span class="truncate">Sign Up</span>
+              </a>
+            <?php endif; ?>
           </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-            <h2 class="text-white tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Create an account</h2>
+          <form action="php/auth/login.php" method="POST" class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
+            <h2 class="text-white tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Log in to your account</h2>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-white text-base font-medium leading-normal pb-2">Name</p>
                 <input
-                  placeholder="Enter your name"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#452e26] focus:border-none h-14 placeholder:text-[#c5a296] p-4 text-base font-normal leading-normal"
                   value=""
+                  required
                 />
               </label>
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-white text-base font-medium leading-normal pb-2">Email</p>
                 <input
-                  placeholder="Enter your email"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#452e26] focus:border-none h-14 placeholder:text-[#c5a296] p-4 text-base font-normal leading-normal"
                   value=""
+                  required
                 />
               </label>
             </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-white text-base font-medium leading-normal pb-2">Password</p>
-                <input
-                  placeholder="Enter your password"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value=""
-                />
-              </label>
+            <div class="flex items-center gap-4 bg-[#211612] px-4 min-h-14 justify-between">
+              <p class="text-white text-base font-normal leading-normal flex-1 truncate">Remember me</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center">
+                  <input
+                    type="checkbox"
+                    name="remember_me"
+                    class="h-5 w-5 rounded border-[#634136] border-2 bg-transparent text-[#db5224] checked:bg-[#db5224] checked:border-[#db5224] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#634136] focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-white text-base font-medium leading-normal pb-2">Confirm Password</p>
-                <input
-                  placeholder="Confirm your password"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value=""
-                />
-              </label>
-            </div>
+            <p class="text-[#c5a296] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline">Forgot password?</p>
             <div class="flex px-4 py-3">
               <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 flex-1 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                type="submit"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 flex-1 bg-[#db5224] text-white text-base font-bold leading-normal tracking-[0.015em]"
               >
-                <span class="truncate">Sign up</span>
+                <span class="truncate">Log in</span>
               </button>
             </div>
-            <p class="text-[#c5a296] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">Already have an account? Log in</p>
-          </div>
+            <p class="text-[#c5a296] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">Don't have an account? Sign up</p>
+          </form>
         </div>
       </div>
     </div>

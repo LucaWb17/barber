@@ -1,3 +1,13 @@
+<?php 
+// Ensure session_start() is the very first thing output.
+// The existing session_start() inside the body will be removed by this change.
+session_start(); 
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <html>
   <head>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
@@ -78,12 +88,41 @@
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Availability</p>
                   </div>
+                  <!-- Login/Logout Link -->
+                  <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="php/auth/logout.php" class="flex items-center gap-3 px-3 py-2">
+                      <div class="text-white" data-icon="SignOut" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M112,216a8,8,0,0,1-8,8H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H56V208h48A8,8,0,0,1,112,216Zm109.66-92.69-48-48a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-34.35,34.35a8,8,0,0,0,11.32,11.32l48-48A8,8,0,0,0,221.66,123.31Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-white text-sm font-medium leading-normal">Logout</p>
+                    </a>
+                  <?php else: ?>
+                    <a href="login.php" class="flex items-center gap-3 px-3 py-2">
+                      <div class="text-white" data-icon="SignIn" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M104,216H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H56V208h48a8,8,0,0,1,0,16Zm117.66-92.69-48-48a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-34.35,34.35a8,8,0,0,0,11.32,11.32l48-48A8,8,0,0,0,221.66,123.31Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-white text-sm font-medium leading-normal">Log In</p>
+                    </a>
+                  <?php endif; ?>
+                  <!-- End Login/Logout Link -->
                 </div>
               </div>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4"><p class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72">Dashboard</p></div>
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72">Dashboard</p>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="p-4">
+              <h1 class="text-white text-xl font-semibold">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
+            </div>
+
             <div class="flex flex-wrap gap-4 p-4">
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#634136]">
                 <p class="text-white text-base font-medium leading-normal">Total Appointments</p>
@@ -98,8 +137,90 @@
                 <p class="text-white tracking-light text-2xl font-bold leading-tight">4.8</p>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Upcoming Appointments</h2>
+            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Your Upcoming Appointments</h2>
             <div class="px-4 py-3 @container">
+              <?php
+              require_once 'php/config.php'; // Path relative to root
+
+              // Fallback DB credentials if not defined in config.php
+              if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
+              if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
+              if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
+              if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db');
+
+              $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+              if ($conn->connect_error) {
+                  echo "<p class='text-red-500'>Database connection failed: " . htmlspecialchars($conn->connect_error) . "</p>";
+              } else {
+                  $user_id = $_SESSION['user_id'];
+                  $sql = "SELECT
+                              a.id AS appointment_id,
+                              a.appointment_datetime,
+                              b.name AS barber_name,
+                              s.name AS service_name,
+                              s.duration_minutes,
+                              a.status
+                          FROM
+                              appointments a
+                          JOIN
+                              barbers b ON a.barber_id = b.id
+                          JOIN
+                              services s ON a.service_id = s.id
+                          WHERE
+                              a.user_id = ? AND
+                              a.status = 'scheduled' AND
+                              a.appointment_datetime >= NOW() 
+                          ORDER BY
+                              a.appointment_datetime ASC";
+                  
+                  $stmt = $conn->prepare($sql);
+                  
+                  if ($stmt) {
+                      $stmt->bind_param("i", $user_id);
+                      $stmt->execute();
+                      $result = $stmt->get_result();
+                      $appointments = $result->fetch_all(MYSQLI_ASSOC);
+                      $stmt->close();
+
+                      if (count($appointments) > 0) {
+                          echo "<div class='overflow-x-auto rounded-xl border border-[#634136]'>";
+                          echo "<table class='min-w-full text-white'>";
+                          echo "<thead class='bg-[#31211b]'><tr class='text-left'>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Date & Time</th>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Barber</th>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Service</th>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Duration</th>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Status</th>";
+                          echo "<th class='px-4 py-3 text-sm font-medium'>Action</th>";
+                          echo "</tr></thead><tbody class='bg-[#211612] divide-y divide-[#452e26]'>";
+
+                          foreach ($appointments as $app) {
+                              echo "<tr>";
+                              echo "<td class='px-4 py-3'>" . htmlspecialchars(date("F j, Y, g:i a", strtotime($app['appointment_datetime']))) . "</td>";
+                              echo "<td class='px-4 py-3'>" . htmlspecialchars($app['barber_name']) . "</td>";
+                              echo "<td class='px-4 py-3'>" . htmlspecialchars($app['service_name']) . "</td>";
+                              echo "<td class='px-4 py-3'>" . htmlspecialchars($app['duration_minutes']) . " min</td>";
+                              echo "<td class='px-4 py-3'>" . htmlspecialchars(ucfirst($app['status'])) . "</td>";
+                              echo "<td class='px-4 py-3'><button class='text-red-500 hover:text-red-700 text-xs'>Cancel</button></td>"; // Placeholder button
+                              echo "</tr>";
+                          }
+                          echo "</tbody></table></div>";
+                      } else {
+                          echo "<div id='upcomingAppointmentsContent' class='text-white p-4 border border-[#634136] rounded-xl'>";
+                          echo "<p>You have no upcoming appointments.</p>";
+                          echo "</div>";
+                      }
+                  } else {
+                      echo "<p class='text-red-500'>Error preparing statement: " . htmlspecialchars($conn->error) . "</p>";
+                  }
+                  $conn->close();
+              }
+              ?>
+            </div>
+            <!-- Original table structure for upcoming appointments can be dynamically populated or removed if not used directly -->
+            <!-- For now, I'll comment out the static table to avoid confusion with the placeholder -->
+              <!--
               <div class="flex overflow-hidden rounded-xl border border-[#634136] bg-[#211612]">
                 <table class="flex-1">
                   <thead>
@@ -203,12 +324,12 @@
                 </table>
               </div>
               <style>
-                          @container(max-width:120px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-120{display: none;}}
-                @container(max-width:240px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-240{display: none;}}
-                @container(max-width:360px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-360{display: none;}}
-                @container(max-width:480px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-480{display: none;}}
-                @container(max-width:600px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-600{display: none;}}
-                @container(max-width:720px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-720{display: none;}}
+                          /* @container(max-width:120px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-120{display: none;}} */
+                /* @container(max-width:240px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-240{display: none;}} */
+                /* @container(max-width:360px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-360{display: none;}} */
+                /* @container(max-width:480px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-480{display: none;}} */
+                /* @container(max-width:600px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-600{display: none;}} */
+                /* @container(max-width:720px){.table-62d658d2-8424-4a5e-bab4-e47b4fc60a96-column-720{display: none;}} */
               </style>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recent Reviews</h2>

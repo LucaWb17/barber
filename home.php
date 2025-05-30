@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <?php session_start(); ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -49,11 +50,25 @@
               <a class="text-white text-sm font-medium leading-normal" href="#">Gallery</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
             </div>
-            <button
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-            >
-              <span class="truncate">Book Now</span>
-            </button>
+            <div class="flex items-center gap-4"> <!-- Added a div to group login/logout with book now -->
+              <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                  <span class="truncate">Logout</span>
+                </a>
+                <!-- Optionally display username:
+                <p class="text-white text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
+                -->
+              <?php else: ?>
+                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                  <span class="truncate">Log In</span>
+                </a>
+              <?php endif; ?>
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">Book Now</span>
+              </button>
+            </div>
           </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">

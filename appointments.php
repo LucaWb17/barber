@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <?php session_start(); ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -79,6 +80,27 @@
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Profile</p>
                   </div>
+                  <!-- Login/Logout Link -->
+                  <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="php/auth/logout.php" class="flex items-center gap-3 px-3 py-2">
+                      <div class="text-white" data-icon="SignOut" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M112,216a8,8,0,0,1-8,8H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H56V208h48A8,8,0,0,1,112,216Zm109.66-92.69-48-48a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-34.35,34.35a8,8,0,0,0,11.32,11.32l48-48A8,8,0,0,0,221.66,123.31Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-white text-sm font-medium leading-normal">Logout</p>
+                    </a>
+                  <?php else: ?>
+                    <a href="login.php" class="flex items-center gap-3 px-3 py-2">
+                      <div class="text-white" data-icon="SignIn" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M104,216H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H56V208h48a8,8,0,0,1,0,16Zm117.66-92.69-48-48a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-34.35,34.35a8,8,0,0,0,11.32,11.32l48-48A8,8,0,0,0,221.66,123.31Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-white text-sm font-medium leading-normal">Log In</p>
+                    </a>
+                  <?php endif; ?>
+                  <!-- End Login/Logout Link -->
                 </div>
               </div>
               <div class="flex flex-col gap-1">
