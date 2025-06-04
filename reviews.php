@@ -23,6 +23,7 @@
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#452e26] px-10 py-3">
           <div class="flex items-center gap-8">
             <div class="flex items-center gap-4 text-white">
+             <a href="home.php" class="flex items-center gap-4 text-white"> <!-- Made logo and title a link to home -->
               <div class="size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#clip0_6_543)">
@@ -43,11 +44,12 @@
                 </svg>
               </div>
               <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Clipper</h2>
+            </a>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-white text-sm font-medium leading-normal" href="#">Services</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -72,20 +74,17 @@
                 />
               </div>
             </label>
-            <button
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            <a href="bookappointment.php"
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-orange-600"
             >
               <span class="truncate">Book Now</span>
-            </button>
+            </a>
             <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                 <span class="truncate">Logout</span>
               </a>
-              <!-- Optionally, if you want to keep avatar when logged in:
-              <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("USER_AVATAR_URL_FROM_SESSION_OR_DEFAULT");'></div>
-              -->
             <?php else: ?>
-              <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+              <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                 <span class="truncate">Log In</span>
               </a>
             <?php endif; ?>
@@ -327,9 +326,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

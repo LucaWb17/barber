@@ -120,7 +120,7 @@ if ($stmt_check->num_rows > 0) {
 $stmt_check->close();
 
 // c. Insert Appointment
-// Assumed table `appointments` has columns: user_id, barber_id, service_id, appointment_datetime, 
+// Assumed table `appointments` has columns: user_id, barber_id, service_id, appointment_datetime,
 // customer_name, customer_email, customer_phone, status
 $sql_insert = "INSERT INTO appointments (user_id, barber_id, service_id, appointment_datetime, customer_name, customer_email, customer_phone, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'scheduled')";
 $stmt_insert = $conn->prepare($sql_insert);
@@ -135,7 +135,92 @@ if (!$stmt_insert) {
 $stmt_insert->bind_param("iiissss", $user_id, $barber_id, $service_id, $appointment_datetime_str, $customer_name, $customer_email, $customer_phone);
 
 if ($stmt_insert->execute()) {
-    echo json_encode(['success' => true, 'message' => 'Appointment booked successfully!']);
+    // Appointment booked successfully, now send emails
+
+    // Fetch barber name
+    $barber_name = "N/A";
+    $stmt_b_name = $conn->prepare("SELECT name FROM barbers WHERE id = ?");
+    if ($stmt_b_name) {
+        $stmt_b_name->bind_param("i", $barber_id);
+        if ($stmt_b_name->execute()) {
+            $result_b_name = $stmt_b_name->get_result();
+            if ($row_b_name = $result_b_name->fetch_assoc()) {
+                $barber_name = $row_b_name['name'];
+            }
+        }
+        $stmt_b_name->close();
+    }
+
+    // Fetch service name
+    $service_name = "N/A";
+    $stmt_s_name = $conn->prepare("SELECT name FROM services WHERE id = ?");
+    if ($stmt_s_name) {
+        $stmt_s_name->bind_param("i", $service_id);
+        if ($stmt_s_name->execute()) {
+            $result_s_name = $stmt_s_name->get_result();
+            if ($row_s_name = $result_s_name->fetch_assoc()) {
+                $service_name = $row_s_name['name'];
+            }
+        }
+        $stmt_s_name->close();
+    }
+
+    $appointment_datetime_formatted = date("F j, Y, g:i a", strtotime($appointment_datetime_str));
+    $salon_name = defined('EMAIL_FROM_NAME') ? EMAIL_FROM_NAME : 'Our Salon';
+    $from_address = defined('EMAIL_FROM_ADDRESS') ? EMAIL_FROM_ADDRESS : 'noreply@example.com';
+
+    // --- Send Customer Email ---
+    $to_customer = $customer_email;
+    $subject_customer = "Your Appointment Confirmation at " . $salon_name;
+
+    $message_customer_html = "
+    <html><head><title>{$subject_customer}</title></head><body>
+    <p>Dear " . htmlspecialchars($customer_name) . ",</p>
+    <p>This email confirms your appointment at <strong>" . htmlspecialchars($salon_name) . "</strong>.</p>
+    <p><strong>Details:</strong></p>
+    <ul>
+        <li><strong>Service:</strong> " . htmlspecialchars($service_name) . "</li>
+        <li><strong>Barber:</strong> " . htmlspecialchars($barber_name) . "</li>
+        <li><strong>Date & Time:</strong> " . htmlspecialchars($appointment_datetime_formatted) . "</li>
+    </ul>
+    <p>We look forward to seeing you!</p>
+    <p>Sincerely,<br>The " . htmlspecialchars($salon_name) . " Team</p>
+    </body></html>";
+
+    $headers_customer = "From: " . htmlspecialchars($salon_name) . " <" . $from_address . ">\r\n";
+    $headers_customer .= "Reply-To: " . $from_address . "\r\n";
+    $headers_customer .= "MIME-Version: 1.0\r\n";
+    $headers_customer .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+    mail($to_customer, $subject_customer, $message_customer_html, $headers_customer);
+
+    // --- Send Salon Notification Email (if SALON_EMAIL is defined) ---
+    if (defined('SALON_EMAIL') && !empty(SALON_EMAIL)) {
+        $to_salon = SALON_EMAIL;
+        $subject_salon = "New Appointment Booking: " . htmlspecialchars($customer_name) . " for " . htmlspecialchars($service_name);
+
+        $message_salon_html = "
+        <html><head><title>{$subject_salon}</title></head><body>
+        <p>A new appointment has been booked:</p>
+        <ul>
+            <li><strong>Customer Name:</strong> " . htmlspecialchars($customer_name) . "</li>
+            <li><strong>Customer Email:</strong> " . htmlspecialchars($customer_email) . "</li>
+            <li><strong>Customer Phone:</strong> " . htmlspecialchars($customer_phone) . "</li>
+            <li><strong>Service:</strong> " . htmlspecialchars($service_name) . "</li>
+            <li><strong>Barber:</strong> " . htmlspecialchars($barber_name) . "</li>
+            <li><strong>Date & Time:</strong> " . htmlspecialchars($appointment_datetime_formatted) . "</li>
+        </ul>
+        </body></html>";
+
+        $headers_salon = "From: System <" . $from_address . ">\r\n";
+        $headers_salon .= "Reply-To: " . htmlspecialchars($customer_email) . "\r\n"; // So salon can reply to customer
+        $headers_salon .= "MIME-Version: 1.0\r\n";
+        $headers_salon .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+        mail($to_salon, $subject_salon, $message_salon_html, $headers_salon);
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Appointment booked successfully! Emails are being sent.']);
 } else {
     http_response_code(500);
     echo json_encode(['error' => 'Failed to book appointment. Please try again. Error: ' . $stmt_insert->error]);

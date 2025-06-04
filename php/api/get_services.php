@@ -23,7 +23,7 @@ if ($conn->connect_error) {
 
 // Prepare and execute SELECT statement to fetch services
 // Assuming columns: id, name, description, duration_minutes, price
-$sql = "SELECT id, name, description, duration_minutes, price FROM services ORDER BY name ASC"; 
+$sql = "SELECT id, name, description, duration_minutes, price FROM services ORDER BY name ASC";
 $result = $conn->query($sql);
 
 $services_array = [];

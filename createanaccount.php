@@ -1,3 +1,6 @@
+<?php
+    session_start(); // Start session to access session variables
+?>
 <html>
   <head>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
@@ -15,14 +18,13 @@
   </head>
   <body>
     <?php
-    session_start(); // Start session to access session variables
-
+    // Display session messages if they exist
     if (isset($_SESSION['message'])) {
-        echo '<p style="color: green; text-align: center; margin-top: 10px;">' . $_SESSION['message'] . '</p>';
+        echo '<p style="color: green; text-align: center; margin-top: 10px;">' . htmlspecialchars($_SESSION['message']) . '</p>';
         unset($_SESSION['message']); // Clear the message after displaying
     }
     if (isset($_SESSION['error'])) {
-        echo '<p style="color: red; text-align: center; margin-top: 10px;">' . $_SESSION['error'] . '</p>';
+        echo '<p style="color: red; text-align: center; margin-top: 10px;">' . htmlspecialchars($_SESSION['error']) . '</p>';
         unset($_SESSION['error']); // Clear the error after displaying
     }
     ?>
@@ -56,16 +58,16 @@
           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
-              <a class="text-white text-sm font-medium leading-normal" href="#">Services</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
             </div>
             <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+              <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                 <span class="truncate">Logout</span>
               </a>
             <?php else: ?>
-              <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+              <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                 <span class="truncate">Log In</span>
               </a>
             <?php endif; ?>

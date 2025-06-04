@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_email'] = $email; // Or $user['email'] if selected
 
             // Optional: Set a success message or simply redirect
-            // $_SESSION['message'] = "Login successful!"; 
+            // $_SESSION['message'] = "Login successful!";
 
             $stmt->close();
             $conn->close();
