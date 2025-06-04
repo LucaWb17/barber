@@ -45,26 +45,23 @@
           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
-              <a class="text-white text-sm font-medium leading-normal" href="#">Services</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Locations</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Locations</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
             </div>
-            <div class="flex gap-2">
-              <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            <div class="flex items-center gap-4">
+               <a href="home.php"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-orange-600"
               >
-                <span class="truncate">Book now</span>
-              </button>
+                <span class="truncate">Home</span>
+              </a>
               <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                   <span class="truncate">Logout</span>
                 </a>
-                <!-- Optionally display username:
-                <p class="text-white text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
-                -->
               <?php else: ?>
-                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                   <span class="truncate">Log In</span>
                 </a>
               <?php endif; ?>
@@ -103,16 +100,30 @@
             </div>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <!-- Basic date input for now. Will be enhanced later. -->
+                <p class="text-white text-sm font-medium leading-normal pb-1">Select Date:</p>
                 <input
-                  type="datetime-local"
-                  id="appointment_datetime"
-                  name="appointment_datetime"
+                  type="date"
+                  id="appointment_date"
+                  name="appointment_date"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
                   required
                 />
               </label>
             </div>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <p class="text-white text-sm font-medium leading-normal pb-1">Select Time:</p>
+                <select
+                  id="appointment_time"
+                  name="appointment_time"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 bg-[image:--select-button-svg] placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
+                  required
+                >
+                  <option value="">Select barber and date first</option>
+                </select>
+              </label>
+            </div>
+            <input type="hidden" name="appointment_datetime" id="appointment_datetime_combined">
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <input
@@ -163,9 +174,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">
@@ -207,22 +218,79 @@
     document.addEventListener('DOMContentLoaded', function() {
         const barberSelect = document.getElementById('barberSelect');
         const serviceSelect = document.getElementById('serviceSelect');
+        const appointmentDateInput = document.getElementById('appointment_date');
+        const appointmentTimeSelect = document.getElementById('appointment_time');
         const bookingForm = document.getElementById('bookingForm');
         const bookingMessagesDiv = document.getElementById('bookingMessages');
+        const combinedDateTimeInput = document.getElementById('appointment_datetime_combined');
 
-        // Function to display messages
         function displayMessage(html, type) {
             bookingMessagesDiv.innerHTML = html;
-            if (type === 'success') {
-                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-green-500';
-            } else if (type === 'error') {
-                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-red-500';
-            } else {
-                bookingMessagesDiv.className = 'mt-2 mb-4 px-4 text-center text-gray-300'; // Neutral
-            }
+            bookingMessagesDiv.className = `mt-2 mb-4 px-4 text-center ${type === 'success' ? 'text-green-500' : (type === 'error' ? 'text-red-500' : 'text-gray-300')}`;
         }
 
-        // Fetch Barbers
+        function fetchAvailability() {
+            const barberId = barberSelect.value;
+            const selectedDate = appointmentDateInput.value;
+
+            appointmentTimeSelect.innerHTML = '<option value="">Loading times...</option>';
+            appointmentTimeSelect.disabled = true;
+
+            if (!barberId || !selectedDate) {
+                appointmentTimeSelect.innerHTML = '<option value="">Select barber and date first</option>';
+                return;
+            }
+
+            // Basic check: ensure date is not in the past (browser might enforce this too)
+            const today = new Date();
+            const inputDate = new Date(selectedDate + "T00:00:00"); // Ensure comparison is date-only
+            today.setHours(0,0,0,0);
+            if (inputDate < today) {
+                 appointmentTimeSelect.innerHTML = '<option value="">Cannot select past dates</option>';
+                 displayMessage('<p>Please select a current or future date.</p>', 'error');
+                 return;
+            }
+
+
+            fetch(`php/api/get_availability.php?barber_id=${barberId}&date=${selectedDate}`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    appointmentTimeSelect.innerHTML = '<option value="">Select a time</option>'; // Default option
+                    if (data.error) {
+                        console.error('API error fetching availability:', data.error);
+                        displayMessage(`<p>${data.error}</p>`, 'error');
+                        appointmentTimeSelect.innerHTML = `<option value="">${data.message || 'Error loading times'}</option>`;
+                    } else if (data.available_slots && data.available_slots.length > 0) {
+                        data.available_slots.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot; // e.g., "09:00"
+                            // Format time for display (e.g., 09:00 AM)
+                            const timeParts = slot.split(':');
+                            const dateForFormatting = new Date();
+                            dateForFormatting.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0);
+                            option.textContent = dateForFormatting.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                            appointmentTimeSelect.appendChild(option);
+                        });
+                        appointmentTimeSelect.disabled = false;
+                    } else {
+                        appointmentTimeSelect.innerHTML = '<option value="">No slots available</option>';
+                        if(data.message) displayMessage(`<p>${data.message}</p>`, 'neutral');
+                    }
+                })
+                .catch(error => {
+                    console.error('Network error fetching availability:', error);
+                    displayMessage('<p>Network error fetching availability. Please try again.</p>', 'error');
+                    appointmentTimeSelect.innerHTML = '<option value="">Error loading times</option>';
+                });
+        }
+
+        barberSelect.addEventListener('change', fetchAvailability);
+        appointmentDateInput.addEventListener('change', fetchAvailability);
+
+        // Populate Barbers
         fetch('php/api/get_barbers.php')
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -231,7 +299,7 @@
             .then(data => {
                 if (data.error) {
                     console.error('API error fetching barbers:', data.error);
-                    barberSelect.innerHTML = '<option value="">Error loading barbers</option>'; // Clear and set error
+                    barberSelect.innerHTML = '<option value="">Error loading barbers</option>';
                     return;
                 }
                 if (Array.isArray(data)) {
@@ -243,15 +311,15 @@
                     });
                 } else {
                      console.error('Unexpected data format for barbers:', data);
-                     barberSelect.innerHTML = '<option value="">Error loading barbers format</option>';
+                     barberSelect.innerHTML = '<option value="">Format error barbers</option>';
                 }
             })
             .catch(error => {
                 console.error('Network error fetching barbers:', error);
-                barberSelect.innerHTML = '<option value="">Network error loading barbers</option>';
+                barberSelect.innerHTML = '<option value="">Network error barbers</option>';
             });
 
-        // Fetch Services
+        // Populate Services
         fetch('php/api/get_services.php')
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -273,21 +341,37 @@
                     });
                 } else {
                     console.error('Unexpected data format for services:', data);
-                    serviceSelect.innerHTML = '<option value="">Error loading services format</option>';
+                    serviceSelect.innerHTML = '<option value="">Format error services</option>';
                 }
             })
             .catch(error => {
                 console.error('Network error fetching services:', error);
-                serviceSelect.innerHTML = '<option value="">Network error loading services</option>';
+                serviceSelect.innerHTML = '<option value="">Network error services</option>';
             });
+
+        fetchAvailability(); // Initial call to set time slot state
 
         // Handle Form Submission
         if (bookingForm) {
             bookingForm.addEventListener('submit', function(event) {
                 event.preventDefault();
-                displayMessage('<p>Processing...</p>', 'neutral'); // Clear previous messages and show processing
 
+                const selectedDate = appointmentDateInput.value;
+                const selectedTime = appointmentTimeSelect.value;
+
+                if (!selectedDate || !selectedTime || selectedTime === "") {
+                    displayMessage('<p>Please select a valid date and time slot.</p>', 'error');
+                    return;
+                }
+                // Format: YYYY-MM-DD HH:MM:SS (MySQL DATETIME format)
+                // The time from get_availability.php is already HH:MM.
+                const combinedDateTime = selectedDate + ' ' + selectedTime + ':00';
+                combinedDateTimeInput.value = combinedDateTime; // Set value for hidden input
+
+                displayMessage('<p>Processing...</p>', 'neutral');
                 const formData = new FormData(bookingForm);
+                // No need to manually delete appointment_date and appointment_time from formData
+                // as only appointment_datetime (from the hidden field) will be used by backend.
 
                 fetch('php/api/book_appointment.php', {
                     method: 'POST',

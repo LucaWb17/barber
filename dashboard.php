@@ -1,7 +1,7 @@
-<?php 
+<?php
 // Ensure session_start() is the very first thing output.
 // The existing session_start() inside the body will be removed by this change.
-session_start(); 
+session_start();
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -38,7 +38,7 @@ if (!isset($_SESSION['user_id'])) {
                   <p class="text-[#c5a296] text-sm font-normal leading-normal">Admin</p>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#452e26]">
+                  <a href="dashboard.php" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#452e26] hover:bg-opacity-80">
                     <div class="text-white" data-icon="House" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -47,8 +47,8 @@ if (!isset($_SESSION['user_id'])) {
                       </svg>
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Dashboard</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
+                  </a>
+                  <a href="appointments.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
                     <div class="text-white" data-icon="Calendar" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -57,8 +57,8 @@ if (!isset($_SESSION['user_id'])) {
                       </svg>
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Appointments</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
+                  </a>
+                  <a href="servizi.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
                     <div class="text-white" data-icon="Scissors" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -67,8 +67,8 @@ if (!isset($_SESSION['user_id'])) {
                       </svg>
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Services</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
+                  </a>
+                  <a href="reviews.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]"> <!-- Was Staff -->
                     <div class="text-white" data-icon="Users" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -77,17 +77,8 @@ if (!isset($_SESSION['user_id'])) {
                       </svg>
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Staff</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-white" data-icon="Clock" data-size="24px" data-weight="regular">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                          d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"
-                        ></path>
-                      </svg>
-                    </div>
-                    <p class="text-white text-sm font-medium leading-normal">Availability</p>
-                  </div>
+                  </a>
+                  <!-- Availability link removed -->
                   <!-- Login/Logout Link -->
                   <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="php/auth/logout.php" class="flex items-center gap-3 px-3 py-2">
@@ -170,12 +161,12 @@ if (!isset($_SESSION['user_id'])) {
                           WHERE
                               a.user_id = ? AND
                               a.status = 'scheduled' AND
-                              a.appointment_datetime >= NOW() 
+                              a.appointment_datetime >= NOW()
                           ORDER BY
                               a.appointment_datetime ASC";
-                  
+
                   $stmt = $conn->prepare($sql);
-                  
+
                   if ($stmt) {
                       $stmt->bind_param("i", $user_id);
                       $stmt->execute();

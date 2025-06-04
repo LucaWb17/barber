@@ -32,7 +32,7 @@
                   <h1 class="text-white text-base font-medium leading-normal">Sophia</h1>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <div class="flex items-center gap-3 px-3 py-2">
+                  <a href="home.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
                     <div class="text-white" data-icon="House" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -41,45 +41,39 @@
                       </svg>
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Home</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-white" data-icon="MagnifyingGlass" data-size="24px" data-weight="regular">
+                  </a>
+                  <a href="servizi.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
+                    <div class="text-white" data-icon="Scissors" data-size="24px" data-weight="regular"> <!-- Changed icon to Scissors for Services -->
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                          d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                        ></path>
+                         <path d="M157.73,113.13A8,8,0,0,1,159.82,102L227.48,55.7a8,8,0,0,1,9,13.21l-67.67,46.3a7.92,7.92,0,0,1-4.51,1.4A8,8,0,0,1,157.73,113.13Zm80.87,85.09a8,8,0,0,1-11.12,2.08L136,137.7,93.49,166.78a36,36,0,1,1-9-13.19L121.83,128,84.44,102.41a35.86,35.86,0,1,1,9-13.19l143,97.87A8,8,0,0,1,238.6,198.22ZM80,180a20,20,0,1,0-5.86,14.14A19.85,19.85,0,0,0,80,180ZM74.14,90.13a20,20,0,1,0-28.28,0A19.85,19.85,0,0,0,74.14,90.13Z"></path>
                       </svg>
                     </div>
-                    <p class="text-white text-sm font-medium leading-normal">Explore</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
+                    <p class="text-white text-sm font-medium leading-normal">Services</p> <!-- Was Explore -->
+                  </a>
+                  <a href="bookappointment.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
                     <div class="text-white" data-icon="Plus" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
                       </svg>
                     </div>
-                    <p class="text-white text-sm font-medium leading-normal">Book</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-white" data-icon="Tray" data-size="24px" data-weight="regular">
+                    <p class="text-white text-sm font-medium leading-normal">Book Appointment</p> <!-- Was Book -->
+                  </a>
+                  <a href="appointments.php" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#452e26]"> <!-- Made this active -->
+                    <div class="text-white" data-icon="Calendar" data-size="24px" data-weight="fill"> <!-- Icon for Appointments -->
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"></path></svg>
+                    </div>
+                    <p class="text-white text-sm font-medium leading-normal">My Appointments</p>
+                  </a>
+                  <a href="dashboard.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]"> <!-- Was Profile -->
+                    <div class="text-white" data-icon="UserCircle" data-size="24px" data-weight="regular"> <!-- Regular weight for non-active -->
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
-                          d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"
+                          d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM40,128a88.1,88.1,0,0,1,88-88V72.85a59.4,59.4,0,0,0-47.91,47.24A88.06,88.06,0,0,1,40,128Zm88,88V183.15a59.4,59.4,0,0,0,47.91-47.24A88.06,88.06,0,0,1,216,128a88.1,88.1,0,0,1-88,88Zm0-104a28,28,0,1,1,28-28A28,28,0,0,1,128,112Zm83.14,42.23a103.87,103.87,0,0,0-21.4-22.17A44.06,44.06,0,0,0,172,120a44,44,0,1,0-44,44,44.06,44.06,0,0,0,12.34-2.26,103.87,103.87,0,0,0,22.17-21.4A87.8,87.8,0,0,1,192.26,168,88.05,88.05,0,0,1,176,183.15V216a87.83,87.83,0,0,1-25.77-3.72A104.34,104.34,0,0,0,172,192.26a103.53,103.53,0,0,0,39.14-37.93Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-white text-sm font-medium leading-normal">Inbox</p>
-                  </div>
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#452e26]">
-                    <div class="text-white" data-icon="UserCircle" data-size="24px" data-weight="fill">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                          d="M172,120a44,44,0,1,1-44-44A44.05,44.05,0,0,1,172,120Zm60,8A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88.09,88.09,0,0,0-91.47-87.93C77.43,41.89,39.87,81.12,40,128.25a87.65,87.65,0,0,0,22.24,58.16A79.71,79.71,0,0,1,84,165.1a4,4,0,0,1,4.83.32,59.83,59.83,0,0,0,78.28,0,4,4,0,0,1,4.83-.32,79.71,79.71,0,0,1,21.79,21.31A87.62,87.62,0,0,0,216,128Z"
-                        ></path>
-                      </svg>
-                    </div>
-                    <p class="text-white text-sm font-medium leading-normal">Profile</p>
-                  </div>
+                    <p class="text-white text-sm font-medium leading-normal">Dashboard</p> <!-- Was Profile -->
+                  </a>
                   <!-- Login/Logout Link -->
                   <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="php/auth/logout.php" class="flex items-center gap-3 px-3 py-2">
@@ -103,18 +97,7 @@
                   <!-- End Login/Logout Link -->
                 </div>
               </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-3 px-3 py-2">
-                  <div class="text-white" data-icon="Gift" data-size="24px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M216,72H180.92c.39-.33.79-.65,1.17-1A29.53,29.53,0,0,0,192,49.57,32.62,32.62,0,0,0,158.44,16,29.53,29.53,0,0,0,137,25.91a54.94,54.94,0,0,0-9,14.48,54.94,54.94,0,0,0-9-14.48A29.53,29.53,0,0,0,97.56,16,32.62,32.62,0,0,0,64,49.57,29.53,29.53,0,0,0,73.91,71c.38.33.78.65,1.17,1H40A16,16,0,0,0,24,88v32a16,16,0,0,0,16,16v64a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V136a16,16,0,0,0,16-16V88A16,16,0,0,0,216,72ZM149,36.51a13.69,13.69,0,0,1,10-4.5h.49A16.62,16.62,0,0,1,176,49.08a13.69,13.69,0,0,1-4.5,10c-9.49,8.4-25.24,11.36-35,12.4C137.7,60.89,141,45.5,149,36.51Zm-64.09.36A16.63,16.63,0,0,1,96.59,32h.49a13.69,13.69,0,0,1,10,4.5c8.39,9.48,11.35,25.2,12.39,34.92-9.72-1-25.44-4-34.92-12.39a13.69,13.69,0,0,1-4.5-10A16.6,16.6,0,0,1,84.87,36.87ZM40,88h80v32H40Zm16,48h64v64H56Zm144,64H136V136h64Zm16-80H136V88h80v32Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <p class="text-white text-sm font-medium leading-normal">Invite friends</p>
-                </div>
-              </div>
+              <!-- Invite friends removed -->
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
@@ -139,11 +122,11 @@
                   <p class="text-white text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">No upcoming appointments</p>
                   <p class="text-white text-sm font-normal leading-normal max-w-[480px] text-center">You don't have any upcoming appointments. Book one now to get started.</p>
                 </div>
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                <a href="bookappointment.php"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80"
                 >
                   <span class="truncate">Book now</span>
-                </button>
+                </a>
               </div>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Past appointments</h2>
@@ -167,9 +150,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

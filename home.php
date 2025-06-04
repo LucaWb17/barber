@@ -45,29 +45,26 @@
           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
-              <a class="text-white text-sm font-medium leading-normal" href="#">Services</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Stylists</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Gallery</a>
-              <a class="text-white text-sm font-medium leading-normal" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Stylists</a> <!-- reviews.php shows barbers -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Gallery</a> <!-- No specific page yet -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a> <!-- No specific page yet -->
             </div>
-            <div class="flex items-center gap-4"> <!-- Added a div to group login/logout with book now -->
+            <div class="flex items-center gap-4">
               <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                   <span class="truncate">Logout</span>
                 </a>
-                <!-- Optionally display username:
-                <p class="text-white text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
-                -->
               <?php else: ?>
-                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                <a href="login.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">
                   <span class="truncate">Log In</span>
                 </a>
               <?php endif; ?>
-              <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+              <a href="bookappointment.php"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-orange-600"
               >
                 <span class="truncate">Book Now</span>
-              </button>
+              </a>
             </div>
           </div>
         </header>
@@ -89,11 +86,11 @@
                       Experience the art of grooming at Clipper, where skilled barbers blend tradition with modern style to create your perfect look.
                     </h2>
                   </div>
-                  <button
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
+                  <a href="bookappointment.php"
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#db5224] text-white text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-orange-600"
                   >
                     <span class="truncate">Book Now</span>
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -177,9 +174,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">
