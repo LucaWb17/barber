@@ -75,12 +75,12 @@ if (!empty($errors)) {
 }
 
 // 3. User ID
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401); // Unauthorized
-    echo json_encode(['error' => 'User not logged in. Please login to book.']);
-    exit();
+$user_id = null; // Default to null for guests
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
 }
-$user_id = $_SESSION['user_id'];
+// If $user_id is null, it's a guest booking.
+// The existing validations for customer_name, customer_email, and customer_phone will ensure these are provided.
 
 // 4. Database Interaction
 $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);

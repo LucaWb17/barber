@@ -14,7 +14,20 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
-    <?php session_start(); ?>
+    <?php
+        session_start();
+        // Define variables for pre-filling customer details if logged in
+        $customer_name_value = '';
+        $customer_email_value = '';
+        if (isset($_SESSION['user_id'])) { // Check if user is logged in
+            if (isset($_SESSION['user_name'])) {
+                $customer_name_value = htmlspecialchars($_SESSION['user_name']);
+            }
+            if (isset($_SESSION['user_email'])) {
+                $customer_email_value = htmlspecialchars($_SESSION['user_email']);
+            }
+        }
+    ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='--select-button-svg: url(&apos;data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(197,162,150)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e&apos;); font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -131,7 +144,7 @@
                   name="customer_name"
                   placeholder="Your name"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value="<?php echo isset($_SESSION['user_name']) ? htmlspecialchars($_SESSION['user_name']) : ''; ?>"
+                  value="<?php echo $customer_name_value; ?>"
                   required
                 />
               </label>
@@ -143,7 +156,7 @@
                   name="customer_email"
                   placeholder="Your email"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border border-[#634136] bg-[#31211b] focus:border-[#634136] h-14 placeholder:text-[#c5a296] p-[15px] text-base font-normal leading-normal"
-                  value="<?php echo isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : ''; ?>"
+                  value="<?php echo $customer_email_value; ?>"
                   required
                 />
               </label>
