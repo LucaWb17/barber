@@ -44,7 +44,19 @@ if (!empty($errors)) {
 }
 
 // 2. Determine Day of the Week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-$day_of_week = (int)$date_obj->format('w');
+$day_of_week_int = (int)$date_obj->format('w');
+
+// Map integer to English day name
+$days_map = [
+    0 => 'Sunday',
+    1 => 'Monday',
+    2 => 'Tuesday',
+    3 => 'Wednesday',
+    4 => 'Thursday',
+    5 => 'Friday',
+    6 => 'Saturday'
+];
+$day_of_week_str = $days_map[$day_of_week_int];
 
 // 3. Database Interaction
 $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
@@ -57,15 +69,16 @@ if ($conn->connect_error) {
 $available_slots = [];
 $db_error_occurred = false;
 
-// Fetch Barber's General Availability for the specific day_of_week
+// Fetch Barber's General Availability for the specific day_of_week_str
 $stmt_avail = $conn->prepare("SELECT start_time, end_time FROM availability WHERE barber_id = ? AND day_of_week = ? AND is_available = TRUE ORDER BY start_time ASC");
 if(!$stmt_avail) {
     http_response_code(500);
-    echo json_encode(['error' => 'Failed to prepare availability statement: ' . $conn->error]);
+    echo json_encode(['error' => 'Failed to prepare availability statement: ' . $conn->error, 'debug_day_of_week_str' => $day_of_week_str ?? 'not_set']);
     $conn->close();
     exit;
 }
-$stmt_avail->bind_param("ii", $barber_id, $day_of_week);
+// Bind $day_of_week_str as a string (s)
+$stmt_avail->bind_param("is", $barber_id, $day_of_week_str);
 $stmt_avail->execute();
 $result_avail = $stmt_avail->get_result();
 $barber_availability_periods = $result_avail->fetch_all(MYSQLI_ASSOC);
