@@ -245,18 +245,21 @@
         function fetchAvailability() {
             const barberId = barberSelect.value;
             const selectedDate = appointmentDateInput.value;
+            const serviceId = serviceSelect.value; // Get selected service ID
+            const selectedServiceOption = serviceSelect.options[serviceSelect.selectedIndex];
+            const serviceDuration = (selectedServiceOption && selectedServiceOption.value !== "") ? selectedServiceOption.dataset.duration : null;
 
             appointmentTimeSelect.innerHTML = '<option value="">Loading times...</option>';
             appointmentTimeSelect.disabled = true;
 
-            if (!barberId || !selectedDate) {
-                appointmentTimeSelect.innerHTML = '<option value="">Select barber and date first</option>';
+            if (!barberId || !selectedDate || !serviceId || !serviceDuration) { // Updated condition
+                appointmentTimeSelect.innerHTML = '<option value="">Select barber, date, and service</option>';
+                // displayMessage('<p>Please select a barber, date, and service to see available times.</p>', 'neutral'); // Optional
                 return;
             }
 
-            // Basic check: ensure date is not in the past (browser might enforce this too)
             const today = new Date();
-            const inputDate = new Date(selectedDate + "T00:00:00"); // Ensure comparison is date-only
+            const inputDate = new Date(selectedDate + "T00:00:00");
             today.setHours(0,0,0,0);
             if (inputDate < today) {
                  appointmentTimeSelect.innerHTML = '<option value="">Cannot select past dates</option>';
@@ -264,14 +267,14 @@
                  return;
             }
 
-
-            fetch(`php/api/get_availability.php?barber_id=${barberId}&date=${selectedDate}`)
+            // Updated fetch URL
+            fetch(`php/api/get_availability.php?barber_id=${barberId}&date=${selectedDate}&service_duration_minutes=${serviceDuration}`)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     return response.json();
                 })
                 .then(data => {
-                    appointmentTimeSelect.innerHTML = '<option value="">Select a time</option>'; // Default option
+                    appointmentTimeSelect.innerHTML = '<option value="">Select a time</option>';
                     if (data.error) {
                         console.error('API error fetching availability:', data.error);
                         displayMessage(`<p>${data.error}</p>`, 'error');
@@ -279,8 +282,7 @@
                     } else if (data.available_slots && data.available_slots.length > 0) {
                         data.available_slots.forEach(slot => {
                             const option = document.createElement('option');
-                            option.value = slot; // e.g., "09:00"
-                            // Format time for display (e.g., 09:00 AM)
+                            option.value = slot;
                             const timeParts = slot.split(':');
                             const dateForFormatting = new Date();
                             dateForFormatting.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0);
@@ -290,7 +292,7 @@
                         appointmentTimeSelect.disabled = false;
                     } else {
                         appointmentTimeSelect.innerHTML = '<option value="">No slots available</option>';
-                        if(data.message) displayMessage(`<p>${data.message}</p>`, 'neutral');
+                        if(data.message) displayMessage(`<p>${data.message}</p>`, 'neutral'); else displayMessage('<p>No slots available for this combination.</p>', 'neutral');
                     }
                 })
                 .catch(error => {
@@ -302,8 +304,8 @@
 
         barberSelect.addEventListener('change', fetchAvailability);
         appointmentDateInput.addEventListener('change', fetchAvailability);
+        serviceSelect.addEventListener('change', fetchAvailability); // ADDED
 
-        // Populate Barbers
         fetch('php/api/get_barbers.php')
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -332,7 +334,6 @@
                 barberSelect.innerHTML = '<option value="">Network error barbers</option>';
             });
 
-        // Populate Services
         fetch('php/api/get_services.php')
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -350,6 +351,7 @@
                         option.value = service.id;
                         let price = parseFloat(service.price).toFixed(2);
                         option.textContent = `${service.name} (${service.duration_minutes} min) - $${price}`;
+                        option.dataset.duration = service.duration_minutes; // STORE DURATION
                         serviceSelect.appendChild(option);
                     });
                 } else {
@@ -362,9 +364,8 @@
                 serviceSelect.innerHTML = '<option value="">Network error services</option>';
             });
 
-        fetchAvailability(); // Initial call to set time slot state
+        fetchAvailability();
 
-        // Handle Form Submission
         if (bookingForm) {
             bookingForm.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -376,15 +377,11 @@
                     displayMessage('<p>Please select a valid date and time slot.</p>', 'error');
                     return;
                 }
-                // Format: YYYY-MM-DD HH:MM:SS (MySQL DATETIME format)
-                // The time from get_availability.php is already HH:MM.
                 const combinedDateTime = selectedDate + ' ' + selectedTime + ':00';
-                combinedDateTimeInput.value = combinedDateTime; // Set value for hidden input
+                combinedDateTimeInput.value = combinedDateTime;
 
                 displayMessage('<p>Processing...</p>', 'neutral');
                 const formData = new FormData(bookingForm);
-                // No need to manually delete appointment_date and appointment_time from formData
-                // as only appointment_datetime (from the hidden field) will be used by backend.
 
                 fetch('php/api/book_appointment.php', {
                     method: 'POST',
@@ -395,9 +392,11 @@
                     if (data.success) {
                         displayMessage(`<p>${data.message}</p>`, 'success');
                         bookingForm.reset();
-                        // Optionally, repopulate dynamic fields or clear them if needed after reset
-                        // For now, a full page refresh or navigating away might be simpler for user
-                        // Or just leave form cleared.
+                        barberSelect.value = "";
+                        serviceSelect.value = "";
+                        appointmentDateInput.value = "";
+                        appointmentTimeSelect.innerHTML = '<option value="">Select barber, date, and service</option>';
+                        appointmentTimeSelect.disabled = true;
                     } else if (data.errors) {
                         let errorHtml = '<ul>';
                         for (const field in data.errors) {
@@ -420,3 +419,5 @@
     });
   </script>
 </html>
+
+[end of bookappointment.php]

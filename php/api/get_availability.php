@@ -8,15 +8,15 @@ if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
 if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
 if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db');
 
-// 1. Retrieve and Validate Input
-$barber_id = filter_input(INPUT_GET, 'barber_id', FILTER_VALIDATE_INT);
+// --- Input Retrieval and Validation ---
+$barber_id = filter_input(INPUT_GET, 'barber_id', FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
 $date_str = $_GET['date'] ?? '';
+$service_duration_minutes = filter_input(INPUT_GET, 'service_duration_minutes', FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
 
 $errors = [];
 if (!$barber_id) {
-    $errors['barber_id'] = 'Barber ID is required and must be an integer.';
+    $errors['barber_id'] = 'Barber ID is required and must be a positive integer.';
 }
-
 if (empty($date_str)) {
     $errors['date'] = 'Date is required.';
 } else {
@@ -25,17 +25,16 @@ if (empty($date_str)) {
         $errors['date'] = 'Invalid date format. Please use YYYY-MM-DD.';
     } else {
         $today = new DateTime();
-        $today->setTime(0,0,0); // Compare date part only
+        $today->setTime(0, 0, 0); // Compare date part only
         if ($date_obj < $today) {
-            // Allow fetching for today, but slots in the past will be filtered later.
-            // If date is strictly before today, then it's an error.
-            // For simplicity, we can allow today and yesterday for timezone considerations,
-            // but frontend should typically prevent selecting past dates.
-            // For now, let's consider any date before today an error for slot generation.
-            // $errors['date'] = 'Date cannot be in the past.';
+            $errors['date'] = 'Date cannot be in the past.';
         }
     }
 }
+if ($service_duration_minutes === false || $service_duration_minutes === null) { // filter_input returns false on failure, null if not set
+    $errors['service_duration_minutes'] = 'Service duration is required and must be a positive integer.';
+}
+
 
 if (!empty($errors)) {
     http_response_code(400);
@@ -43,22 +42,46 @@ if (!empty($errors)) {
     exit;
 }
 
-// 2. Determine Day of the Week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-$day_of_week_int = (int)$date_obj->format('w');
+// --- Working Day Check ---
+$day_of_week_int = (int)$date_obj->format('w'); // 0 for Sunday, 6 for Saturday
+if ($day_of_week_int === 0 || $day_of_week_int === 1) { // Sunday or Monday
+    echo json_encode(['available_slots' => [], 'message' => 'Appointments are only available from Tuesday to Saturday.']);
+    exit;
+}
 
-// Map integer to English day name
-$days_map = [
-    0 => 'Sunday',
-    1 => 'Monday',
-    2 => 'Tuesday',
-    3 => 'Wednesday',
-    4 => 'Thursday',
-    5 => 'Friday',
-    6 => 'Saturday'
-];
-$day_of_week_str = $days_map[$day_of_week_int];
+// --- Define Fixed Schedule ---
+$shop_open_time_str = '08:00:00';
+$shop_close_time_str = '21:00:00';
+$slot_interval_minutes = 30;
 
-// 3. Database Interaction
+// --- Generate Potential Start Slots & Filter by End Time ---
+$potential_slots = [];
+$current_slot_start = new DateTime($date_str . ' ' . $shop_open_time_str);
+$shop_close_dt = new DateTime($date_str . ' ' . $shop_close_time_str);
+$now_datetime = new DateTime();
+
+while (true) {
+    $potential_slot_end = clone $current_slot_start;
+    $potential_slot_end->modify("+" . $service_duration_minutes . " minutes");
+
+    if ($potential_slot_end > $shop_close_dt) {
+        break; // This slot would end after shop closes
+    }
+
+    // Filter out slots that are in the past if the selected date is today
+    if ($date_obj->format('Y-m-d') === $now_datetime->format('Y-m-d') && $current_slot_start < $now_datetime) {
+        // Modify $current_slot_start for the next iteration and continue
+        $current_slot_start->modify("+" . $slot_interval_minutes . " minutes");
+        continue;
+    }
+
+    $potential_slots[] = clone $current_slot_start;
+    $current_slot_start->modify("+" . $slot_interval_minutes . " minutes");
+    if ($current_slot_start >= $shop_close_dt) break;
+}
+
+
+// --- Fetch Existing Appointments ---
 $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 if ($conn->connect_error) {
     http_response_code(500);
@@ -66,86 +89,60 @@ if ($conn->connect_error) {
     exit;
 }
 
-$available_slots = [];
-$db_error_occurred = false;
+$booked_intervals = [];
+$sql_booked = "SELECT a.appointment_datetime, s.duration_minutes
+               FROM appointments a
+               JOIN services s ON a.service_id = s.id
+               WHERE a.barber_id = ? AND DATE(a.appointment_datetime) = ? AND a.status = 'scheduled'";
+$stmt_booked = $conn->prepare($sql_booked);
 
-// Fetch Barber's General Availability for the specific day_of_week_str
-$stmt_avail = $conn->prepare("SELECT start_time, end_time FROM availability WHERE barber_id = ? AND day_of_week = ? AND is_available = TRUE ORDER BY start_time ASC");
-if(!$stmt_avail) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Failed to prepare availability statement: ' . $conn->error, 'debug_day_of_week_str' => $day_of_week_str ?? 'not_set']);
-    $conn->close();
-    exit;
-}
-// Bind $day_of_week_str as a string (s)
-$stmt_avail->bind_param("is", $barber_id, $day_of_week_str);
-$stmt_avail->execute();
-$result_avail = $stmt_avail->get_result();
-$barber_availability_periods = $result_avail->fetch_all(MYSQLI_ASSOC);
-$stmt_avail->close();
-
-if (empty($barber_availability_periods)) {
-    echo json_encode(['available_slots' => [], 'message' => 'Barber is not available on this day.']);
-    $conn->close();
-    exit;
-}
-
-// Fetch Booked Appointments for the Date
-// We fetch duration_minutes for potential future use in more precise conflict checking
-$stmt_booked = $conn->prepare("SELECT a.appointment_datetime, s.duration_minutes FROM appointments a JOIN services s ON a.service_id = s.id WHERE a.barber_id = ? AND DATE(a.appointment_datetime) = ? AND a.status = 'scheduled'");
 if(!$stmt_booked) {
     http_response_code(500);
     echo json_encode(['error' => 'Failed to prepare booked appointments statement: ' . $conn->error]);
     $conn->close();
     exit;
 }
+
 $stmt_booked->bind_param("is", $barber_id, $date_str);
 $stmt_booked->execute();
 $result_booked = $stmt_booked->get_result();
-$booked_appointments_raw = $result_booked->fetch_all(MYSQLI_ASSOC);
-$stmt_booked->close();
-
-$booked_slots_start_times = [];
-foreach ($booked_appointments_raw as $booked) {
-    // Store just the H:i time for easier comparison with generated slots
-    $booked_dt_obj = new DateTime($booked['appointment_datetime']);
-    $booked_slots_start_times[] = $booked_dt_obj->format('H:i');
+while ($row = $result_booked->fetch_assoc()) {
+    $booked_start = new DateTime($row['appointment_datetime']);
+    $booked_end = clone $booked_start;
+    $booked_end->modify("+" . $row['duration_minutes'] . " minutes");
+    $booked_intervals[] = ['start' => $booked_start, 'end' => $booked_end];
 }
+$stmt_booked->close();
+$conn->close();
 
 
-// Calculate Available Slots
-$slot_duration_minutes = 30; // Configurable: 30 minutes
+// --- Determine Actually Available Slots (Conflict Detection) ---
+$actually_available_slots_str = [];
+foreach ($potential_slots as $potential_start_dt) {
+    $potential_end_dt = clone $potential_start_dt;
+    $potential_end_dt->modify("+" . $service_duration_minutes . " minutes");
 
-$now_datetime = new DateTime(); // Current time for checking past slots on the current day
-
-foreach ($barber_availability_periods as $period) {
-    $current_slot_time = new DateTime($date_str . ' ' . $period['start_time']);
-    $end_period_time = new DateTime($date_str . ' ' . $period['end_time']);
-
-    while ($current_slot_time < $end_period_time) {
-        $slot_time_str = $current_slot_time->format('H:i');
-
-        // Check if slot is in the past (only if the date is today)
-        if ($date_obj->format('Y-m-d') === $now_datetime->format('Y-m-d') && $current_slot_time < $now_datetime) {
-            $current_slot_time->modify("+" . $slot_duration_minutes . " minutes");
-            continue;
+    $is_slot_available = true;
+    foreach ($booked_intervals as $booked_interval) {
+        // Overlap condition: (new_start < existing_end) AND (new_end > existing_start)
+        if ($potential_start_dt < $booked_interval['end'] && $potential_end_dt > $booked_interval['start']) {
+            $is_slot_available = false;
+            break;
         }
+    }
 
-        // Simplified conflict check: if a slot's start time matches a booked appointment's start time
-        if (!in_array($slot_time_str, $booked_slots_start_times)) {
-            $available_slots[] = $slot_time_str;
-        }
-
-        $current_slot_time->modify("+" . $slot_duration_minutes . " minutes");
+    if ($is_slot_available) {
+        $actually_available_slots_str[] = $potential_start_dt->format('H:i');
     }
 }
 
-$conn->close();
-
-if ($db_error_occurred) {
-    // Error already sent
-    exit;
+if (empty($actually_available_slots_str) && !empty($potential_slots) ) { // Had potential slots but all were booked or conflicted
+     echo json_encode(['available_slots' => [], 'message' => 'No slots available for the selected criteria due to existing bookings.']);
+} elseif (empty($actually_available_slots_str) && empty($potential_slots) && ($day_of_week_int !== 0 && $day_of_week_int !== 1) ){ // No potential slots generated (e.g., service duration too long for any part of the day)
+     echo json_encode(['available_slots' => [], 'message' => 'No slots available, possibly due to service duration exceeding working hours.']);
+}
+else {
+    echo json_encode(['available_slots' => $actually_available_slots_str]);
 }
 
-echo json_encode(['available_slots' => array_values(array_unique($available_slots))]); // Ensure unique slots if periods overlap
 ?>
