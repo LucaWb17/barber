@@ -60,7 +60,7 @@
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="contact.php">Contact</a> <!-- Updated Contact link -->
             </div>
             <?php if (isset($_SESSION['user_id'])): ?>
               <a href="php/auth/logout.php" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#452e26] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-80">

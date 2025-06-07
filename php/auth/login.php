@@ -31,18 +31,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // ---- Database Operations ----
-    // Define DB constants if not already defined (e.g. by config.php)
-    if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
-    if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
-    if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
-    if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db');
+    // Check if DB constants are defined
+    if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+        $_SESSION['error'] = "Database configuration is missing. Please contact the site administrator.";
+        header("Location: ../../login.php");
+        exit();
+    }
 
     // Establish Database Connection
     $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
     // Check Connection
     if ($conn->connect_error) {
-        $_SESSION['error'] = "Connection failed: " . $conn->connect_error . ". Please check config.php and ensure database server is running.";
+        error_log("Login - DB Connection failed: " . $conn->connect_error);
+        $_SESSION['error'] = "Login failed due to a server issue. Please try again later.";
         header("Location: ../../login.php");
         exit();
     }
@@ -51,7 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Assuming the table 'users' has columns 'id', 'name', and 'password_hash' (for the hashed password)
     $stmt = $conn->prepare("SELECT id, name, password_hash FROM users WHERE email = ?");
     if (!$stmt) {
-        $_SESSION['error'] = "Database error (prepare select): " . $conn->error;
+        error_log("Login - DB prepare select failed: " . $conn->error);
+        $_SESSION['error'] = "Login failed due to a server issue. Please try again later.";
         $conn->close();
         header("Location: ../../login.php");
         exit();
@@ -59,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("s", $email);
 
     if (!$stmt->execute()) {
-        $_SESSION['error'] = "Database error (execute select): " . $stmt->error;
+        error_log("Login - DB execute select failed: " . $stmt->error);
+        $_SESSION['error'] = "Login failed due to a server issue. Please try again later.";
         $stmt->close();
         $conn->close();
         header("Location: ../../login.php");

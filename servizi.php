@@ -8,13 +8,21 @@
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
     />
 
-    <title>Stitch Design</title>
+    <title>Our Services - Clipper</title> <!-- Changed title -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
-    <?php session_start(); ?>
+    <?php
+    session_start();
+    require_once 'php/config.php'; // Include config file
+
+    // Check if DB constants are defined
+    if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+        die("<div class='p-4 text-red-500 text-center'>Database configuration is missing. Please contact the site administrator.</div>");
+    }
+    ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -49,8 +57,8 @@
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="home.php">Home</a>
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Team</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a> <!-- Changed "Team" to "Barbers" -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="contact.php">Contact</a> <!-- Updated Contact link -->
             </div>
             <div class="flex items-center gap-4">
               <?php if (isset($_SESSION['user_id'])): ?>
@@ -81,82 +89,53 @@
                 </p>
               </div>
             </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Haircuts</h2>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Classic Cut</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A classic haircut tailored to your preferences, including a wash, cut, and style.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">45 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$35</p></div>
-            </div>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Modern Style</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A modern haircut with advanced styling techniques, perfect for contemporary looks.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">60 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$45</p></div>
-            </div>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Trim</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A quick trim to maintain your current style, ideal for regular upkeep.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">30 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$25</p></div>
-            </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Beard Services</h2>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Beard Trim</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A precise beard trim and shaping to enhance your facial features.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">30 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$20</p></div>
-            </div>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Beard Grooming</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A full beard grooming service, including trimming, shaping, and conditioning.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">45 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$30</p></div>
-            </div>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Shave</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A clean shave with hot towel treatment for a smooth finish.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">15 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$15</p></div>
-            </div>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Packages</h2>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Cut &amp; Beard Combo</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">A combination of a classic cut and beard trim for a complete grooming experience.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">75 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$50</p></div>
-            </div>
-            <div class="flex gap-4 bg-[#211612] px-4 py-3 justify-between">
-              <div class="flex flex-1 flex-col justify-center">
-                <p class="text-white text-base font-medium leading-normal">Premium Grooming</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">Our premium package includes a modern style haircut and full beard grooming.</p>
-                <p class="text-[#c5a296] text-sm font-normal leading-normal">90 min</p>
-              </div>
-              <div class="shrink-0"><p class="text-white text-base font-normal leading-normal">$70</p></div>
-            </div>
+            <!-- Dynamic Services Section -->
+            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Services</h2>
+            <?php
+            // Determine the correct path to the API script
+            // Since servizi.php is in the root, and api is in php/api/, the path is 'php/api/get_services.php'
+            $api_url = 'php/api/get_services.php';
+            if (file_exists($api_url)) {
+                $services_json = @file_get_contents($api_url); // Use @ to suppress direct output of warnings on failure
+                if ($services_json === false) {
+                    echo "<p class='text-red-500 px-4 py-3'>Error: Could not fetch services data from the API.</p>";
+                } else {
+                    $services = json_decode($services_json, true);
+
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        error_log("Servizi.php - JSON Decode Error: " . json_last_error_msg() . " | Raw: " . $services_json);
+                        echo "<p class='text-red-500 px-4 py-3'>Error: Could not process services data. Please try again later.</p>";
+                    } elseif (isset($services['error'])) {
+                        echo "<p class='text-red-500 px-4 py-3'>Error from API: " . htmlspecialchars($services['error']) . "</p>";
+                    } elseif (empty($services)) {
+                        echo "<p class='text-white px-4 py-3'>No services currently available.</p>";
+                    } else {
+                        foreach ($services as $service) {
+                            echo "<div class='flex gap-4 bg-[#211612] px-4 py-3 justify-between border-b border-b-[#452e26]'>"; // Added border for separation
+                            echo "  <div class='flex flex-1 flex-col justify-center'>";
+                            echo "    <p class='text-white text-base font-medium leading-normal'>" . htmlspecialchars($service['name']) . "</p>";
+                            echo "    <p class='text-[#c5a296] text-sm font-normal leading-normal'>" . htmlspecialchars($service['description']) . "</p>";
+                            echo "    <p class='text-[#c5a296] text-sm font-normal leading-normal'>" . htmlspecialchars($service['duration_minutes']) . " min</p>";
+                            echo "  </div>";
+                            echo "  <div class='shrink-0'><p class='text-white text-base font-normal leading-normal'>$" . htmlspecialchars(number_format((float)$service['price'], 2)) . "</p></div>";
+                            echo "</div>";
+                        }
+                    }
+                }
+            } else {
+                echo "<p class='text-red-500 px-4 py-3'>Error: Services API endpoint not found at " . htmlspecialchars($api_url) . ".</p>";
+            }
+            ?>
+            <!-- End Dynamic Services Section -->
           </div>
         </div>
         <footer class="flex justify-center">
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="contact.php">Contact Us</a> <!-- Updated Contact Us link -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Privacy Policy</a> <!-- Disabled Privacy Policy -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Terms of Service</a> <!-- Disabled Terms of Service -->
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

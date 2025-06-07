@@ -8,13 +8,21 @@
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
     />
 
-    <title>Stitch Design</title>
+    <title>Our Barbers & Reviews - Clipper</title> <!-- Updated Title -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
-    <?php session_start(); ?>
+    <?php
+    session_start();
+    require_once 'php/config.php'; // Include config file
+
+    // Check if DB constants are defined
+    if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+        die("<div class='p-4 text-red-500 text-center'>Database configuration is missing. Please contact the site administrator.</div>");
+    }
+    ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -49,7 +57,7 @@
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="contact.php">Contact</a> <!-- Updated Contact link -->
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -101,217 +109,99 @@
               </div>
             </div>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-col gap-3 text-center pb-3">
-                <div class="px-4">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8klS6MHX_Qys6hNr3uJ4qJl2UUnXurSvnaQ0xKTEnh-REdvhVQwbpVvy_vyarex7GsPeUwVRMZCcc8_yaNMZnwMLI20KwxmQHL0no4LwEIRBMY82Uv3lzsVzAvRqtdm-OSmfG5IZrngLTB4oCDOmbPe1jkRzQE_JDo_yBRIy9-qhNgax1GxwZvZCTkiM3329wxhVy_U8IWukWxoXUtVOm6V2xN2MWeGA7UDrvvhNZ1sxAiqe4FeGjbFFhUrTGYmG62-42pe90xw");'
-                  ></div>
-                </div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Alex</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">5 years of experience</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Specializes in fades and modern styles</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 text-center pb-3">
-                <div class="px-4">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAlNpEvLQ5cjTI4UuJ6EtCiFg2z4TjfDjVpJ85g36k3zKyg4IFHLs4n7V5Z79IUpsEYTqK377HLAXnfvMMNTYj2tuAOkAHOfeDtvWl1KtRwNLrzcXtcdIOoaMYK9XNIIi4iPyDRYuIqoEOmssYdTJBWeWgtoRrOaOHUmTOiX0x_K5eXe65VyNfB_rYUWQMn1Z2egTzvlhwLXHB5df39f3YLFkZyB_4C2sJ9RuRuUPULtUpPYYeK4HZPHA9nL8U5UeoXb3Aq_YvdFg");'
-                  ></div>
-                </div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Ryan</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">3 years of experience</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Expert in classic cuts and beard trims</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 text-center pb-3">
-                <div class="px-4">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAs5cb4RbwR9NF7jeUUOYRzOKWgVBhr0yLQZWOxVBHQSEqMxB05loqsOOx9T-cMnPrSaNo75mQiuwa_7r8PRmiBaWGLpc9JHI-e4y4PQ61XesGpim5yEavk0PYwLpqFRu1-lNpGUbk9I0M6i0dB0gChZmiOgn4CkjtK69n8a0OyAIXp-TVqfAfXvWMe9LI1YvmICuZU4sm0U6cD0LdnJH4Es8f2iotXdn8myiTlB5mWP65d40Xj1QvMpUA6kStC2Uu15udf3R6Z1A");'
-                  ></div>
-                </div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Chris</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">7 years of experience</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Known for detailed work and creative designs</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 text-center pb-3">
-                <div class="px-4">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDIVpiEpK5GRT2AtOxpA_IbxPo-poWe8FyZgpzN_ZbXLGu9cYZ7vP-6OCq_2NZndDaF4cDez0VydUdJvmDHEPwVkDSd7_rKXoE3-wmrBli2TBDU9lzPv7KBT00xietvxE7YXCTObjslmheHhueDTf41gTkASKB8JvrKXQVfVimL3CQ9MT4yL8ULBSisqAmtw7y4R5vEx64sVdLDH4EwLFreHcelefzZNrjxu8bJq7JnCdK24L-c6KIfPjsmYQAMUqiScBfg9KLQ-g");'
-                  ></div>
-                </div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">David</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">2 years of experience</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Skilled in long hair styling and color</p>
-                </div>
-              </div>
+              <?php
+              $barbers_api_url = 'php/api/get_barbers.php';
+              if (file_exists($barbers_api_url)) {
+                  $barbers_json = @file_get_contents($barbers_api_url);
+                  if ($barbers_json === false) {
+                      echo "<p class='text-red-500 col-span-full'>Error: Could not fetch barbers data. Please try again later.</p>";
+                  } else {
+                      $barbers = json_decode($barbers_json, true);
+                      if (json_last_error() !== JSON_ERROR_NONE) {
+                          error_log("Reviews.php - JSON Decode Error: " . json_last_error_msg() . " | Raw: " . $barbers_json);
+                          echo "<p class='text-red-500 col-span-full'>Error: Could not process barbers data. Please try again later.</p>";
+                      } elseif (isset($barbers['error'])) {
+                          echo "<p class='text-red-500 col-span-full'>Error from API: " . htmlspecialchars($barbers['error']) . "</p>";
+                      } elseif (empty($barbers)) {
+                          echo "<p class='text-white col-span-full'>Our team information is currently unavailable.</p>";
+                      } else {
+                          foreach ($barbers as $barber) {
+                              $photo_url = !empty($barber['photo_url']) ? $barber['photo_url'] : 'https://via.placeholder.com/150/452e26/FFFFFF?text=No+Image';
+                              $specialty = !empty($barber['specialty']) ? $barber['specialty'] : 'Expert Barber';
+                              echo "<div class='flex flex-col gap-3 text-center pb-3'>";
+                              echo "  <div class='px-4'>";
+                              echo "    <div class='w-full bg-center bg-no-repeat aspect-square bg-cover rounded-full' style='background-image: url(\"" . htmlspecialchars($photo_url) . "\");'></div>";
+                              echo "  </div>";
+                              echo "  <div>";
+                              echo "    <p class='text-white text-base font-medium leading-normal'>" . htmlspecialchars($barber['name']) . "</p>";
+                              echo "    <p class='text-[#c5a296] text-sm font-normal leading-normal'>" . htmlspecialchars($specialty) . "</p>";
+                              echo "  </div>";
+                              echo "</div>";
+                          }
+                      }
+                  }
+              } else {
+                  echo "<p class='text-red-500 col-span-full'>Error: Barbers API endpoint not found at " . htmlspecialchars($barbers_api_url) . ".</p>";
+              }
+              ?>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reviews</h2>
-            <div class="flex flex-col gap-8 overflow-x-hidden bg-[#211612] p-4">
-              <div class="flex flex-col gap-3 bg-[#211612]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgzTqhZ8-3pssi00GF24LeONySjKk1tPr3Nd9ok-TrDu9Khg5PSMUbkIhDNNSmTtFaB6VoOP5LAIHTPCwUNHRhBLLDHzgPm3st7SiDHL9xjuAmaiJj2LsI_Jl-ljXjCQvPvgHeGnJR5wSVivSHZ_dDAsTDLyAVBXpN-wSyDGdwlzQLhOdxX7ofx2fTXKaPAJBYYmtVZFUTsGNqBa4k-Yqx2ywMjzc2LLsPaHtCUWlg1o5biJWxbwr9-wWCmZB2BKpe0OPfiQPvAA");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-white text-base font-medium leading-normal">Ethan</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">2 months ago</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-white text-base font-normal leading-normal">
-                  Alex is the best barber I've ever been to. He always knows exactly what I want and delivers a perfect haircut every time. Highly recommend!
-                </p>
-              </div>
-              <div class="flex flex-col gap-3 bg-[#211612]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC99spNpWt3Vq7XUoLpnpbFS7UXAEy6x1F2i0pTtaZty35cMKn20_pL83JVo9ONsp2_Y923aLWkD6sN6-51mv3umK8ZmVx9JTweRyXob0EvtOi5o44Q3qL3fn0wrX9SY5RbSjWzp04RUMrbco1a_ZEznW65ZQlL2EgaWWuoxsfW0vzOJkXvkz69eUJdwkQe4U5Z9aftdeBCrj3MZzzBRgG4iNYDFgEfXvvQDRSwayp947zQhMfreYS8hZEYzCFH8-anU-LwJxb9bg");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-white text-base font-medium leading-normal">Liam</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">3 months ago</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#87594a]" data-icon="Star" data-size="20px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M239.2,97.29a16,16,0,0,0-13.81-11L166,81.17,142.72,25.81h0a15.95,15.95,0,0,0-29.44,0L90.07,81.17,30.61,86.32a16,16,0,0,0-9.11,28.06L66.61,153.8,53.09,212.34a16,16,0,0,0,23.84,17.34l51-31,51.11,31a16,16,0,0,0,23.84-17.34l-13.51-58.6,45.1-39.36A16,16,0,0,0,239.2,97.29Zm-15.22,5-45.1,39.36a16,16,0,0,0-5.08,15.71L187.35,216v0l-51.07-31a15.9,15.9,0,0,0-16.54,0l-51,31h0L82.2,157.4a16,16,0,0,0-5.08-15.71L32,102.35a.37.37,0,0,1,0-.09l59.44-5.14a16,16,0,0,0,13.35-9.75L128,32.08l23.2,55.29a16,16,0,0,0,13.35,9.75L224,102.26S224,102.32,224,102.33Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-white text-base font-normal leading-normal">
-                  Ryan is great! He's very skilled and takes his time to make sure everything is perfect. I'm always happy with my haircut.
-                </p>
-              </div>
-              <div class="flex flex-col gap-3 bg-[#211612]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWxJ8tG_DO1eAQh7MN9Rg0qK1cx0H21haPkEzTTxoxmepNLNkYrKl149ZD5v8IlYTMEL0o9NfEV1rnTCDjdJVqorzUc5EQE3AhvzzWEqTT1iSWhT_Cbl3A2NqxjUGD7W4qfxJCJLYn2KaZMxYuYZUETlxg1e1Y_bFioXNFfKRD7x4bFPlqewMjzukRKFRQXXg9ur3GLhsFRRQLyQajvdLq5Rhv7CWlcNr5PhZQCfcBHnGmeAOCNQoOWZKmryWlbQdoK-BC_wWcJA");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-white text-base font-medium leading-normal">Noah</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">4 months ago</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-white text-base font-normal leading-normal">
-                  Chris is amazing! He's not only a great barber but also a cool guy to chat with. My haircut always looks fantastic, and I leave feeling refreshed.
-                </p>
-              </div>
+            <div class="flex flex-col gap-4 overflow-x-hidden bg-[#211612] p-4"> <!-- Changed gap-8 to gap-4 for less space between reviews -->
+              <?php
+              $reviews_api_url = 'php/api/get_reviews.php';
+              if (file_exists($reviews_api_url)) {
+                  $reviews_json = @file_get_contents($reviews_api_url);
+                  if ($reviews_json === false) {
+                      echo "<p class='text-red-500 px-4 py-3'>Error: Could not fetch reviews. Please try again later.</p>";
+                  } else {
+                      $reviews = json_decode($reviews_json, true);
+                      if (json_last_error() !== JSON_ERROR_NONE) {
+                          error_log("Reviews.php - JSON Decode Error for reviews: " . json_last_error_msg() . " | Raw: " . $reviews_json);
+                          echo "<p class='text-red-500 px-4 py-3'>Error: Could not process reviews data. Please try again later.</p>";
+                      } elseif (isset($reviews['error'])) {
+                          echo "<p class='text-red-500 px-4 py-3'>Error from API: " . htmlspecialchars($reviews['error']) . "</p>";
+                      } elseif (empty($reviews)) {
+                          echo "<p class='text-white px-4 py-3'>No reviews yet. Be the first to share your experience!</p>";
+                      } else {
+                          foreach ($reviews as $review) {
+                              $user_avatar_text = strtoupper(substr(htmlspecialchars($review['user_name'] ?? 'A'), 0, 1));
+                              $review_date_formatted = htmlspecialchars(date("F j, Y", strtotime($review['review_date'])));
+                              $rating = (int)$review['rating'];
+
+                              echo "<div class='flex flex-col gap-3 bg-[#211612] p-3 border-b border-b-[#452e26]'>"; // Added padding and border
+                              echo "  <div class='flex items-center gap-3'>";
+                              echo "    <div class='bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10' style='background-image: url(\"https://via.placeholder.com/40/DB5224/FFFFFF?text={$user_avatar_text}\");'></div>";
+                              echo "    <div class='flex-1'>";
+                              echo "      <p class='text-white text-base font-medium leading-normal'>" . htmlspecialchars($review['user_name'] ?? 'Anonymous') . "</p>";
+                              echo "      <p class='text-[#c5a296] text-sm font-normal leading-normal'>{$review_date_formatted}</p>";
+                              if (!empty($review['barber_name'])) {
+                                  echo "<p class='text-[#c5a296] text-xs'>For: " . htmlspecialchars($review['barber_name']) . "</p>";
+                              }
+                              echo "    </div>";
+                              echo "  </div>";
+                              echo "  <div class='flex gap-0.5'>";
+                              for ($i = 0; $i < 5; $i++) {
+                                  $star_color = ($i < $rating) ? '[#db5224]' : '[#87594a]'; // Orange for filled, darker for regular/empty
+                                  $star_weight = ($i < $rating) ? 'fill' : 'regular';
+                                  $star_path = ($i < $rating)
+                                      ? "M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                                      : "M239.2,97.29a16,16,0,0,0-13.81-11L166,81.17,142.72,25.81h0a15.95,15.95,0,0,0-29.44,0L90.07,81.17,30.61,86.32a16,16,0,0,0-9.11,28.06L66.61,153.8,53.09,212.34a16,16,0,0,0,23.84,17.34l51-31,51.11,31a16,16,0,0,0,23.84-17.34l-13.51-58.6,45.1-39.36A16,16,0,0,0,239.2,97.29Zm-15.22,5-45.1,39.36a16,16,0,0,0-5.08,15.71L187.35,216v0l-51.07-31a15.9,15.9,0,0,0-16.54,0l-51,31h0L82.2,157.4a16,16,0,0,0-5.08-15.71L32,102.35a.37.37,0,0,1,0-.09l59.44-5.14a16,16,0,0,0,13.35-9.75L128,32.08l23.2,55.29a16,16,0,0,0,13.35,9.75L224,102.26S224,102.32,224,102.33Z";
+                                  echo "<div class='text-{$star_color}' data-icon='Star' data-size='20px' data-weight='{$star_weight}'>";
+                                  echo "  <svg xmlns='http://www.w3.org/2000/svg' width='20px' height='20px' fill='currentColor' viewBox='0 0 256 256'>";
+                                  echo "    <path d='{$star_path}'></path>";
+                                  echo "  </svg>";
+                                  echo "</div>";
+                              }
+                              echo "  </div>"; // end flex gap-0.5 for stars
+                              echo "  <p class='text-white text-base font-normal leading-normal'>" . nl2br(htmlspecialchars($review['comment'])) . "</p>";
+                              echo "</div>"; // end review item
+                          }
+                      }
+                  }
+              } else {
+                  echo "<p class='text-red-500 px-4 py-3'>Error: Reviews API endpoint not found at " . htmlspecialchars($reviews_api_url) . ".</p>";
+              }
+              ?>
             </div>
             <div class="flex px-4 py-3 justify-center">
               <button
@@ -326,9 +216,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="contact.php">Contact Us</a> <!-- Updated Contact Us link -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Privacy Policy</a> <!-- Disabled Privacy Policy -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Terms of Service</a> <!-- Disabled Terms of Service -->
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

@@ -60,8 +60,8 @@
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Locations</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a>
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="locations.php">Locations</a> <!-- Updated Locations link -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="contact.php">Contact</a> <!-- Updated Contact link -->
             </div>
             <div class="flex items-center gap-4">
                <a href="home.php"
@@ -187,9 +187,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Privacy Policy</a> <!-- Disabled Privacy Policy -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Terms of Service</a> <!-- Disabled Terms of Service -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="contact.php">Contact Us</a> <!-- Updated Contact Us link -->
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

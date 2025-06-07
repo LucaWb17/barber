@@ -8,13 +8,25 @@
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
     />
 
-    <title>Stitch Design</title>
+    <title>Clipper Home</title> <!-- Updated Title -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
-    <?php session_start(); ?>
+    <?php
+    session_start();
+    require_once 'php/config.php'; // Include config file
+
+    // Check if DB constants are defined
+    if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+        // It's generally better to not die on the homepage, but show a degraded experience or a subtle error.
+        // However, for this exercise, we'll keep it simple and die if critical components can't load.
+        // Consider a less disruptive error for a production site.
+        error_log("Database configuration is missing on home.php. Site may not function correctly.");
+        // For now, we'll allow the page to render and let API calls fail gracefully below.
+    }
+    ?>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#211612] dark group/design-root overflow-x-hidden"
       style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'
@@ -46,9 +58,9 @@
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="servizi.php">Services</a>
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Stylists</a> <!-- reviews.php shows barbers -->
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Gallery</a> <!-- No specific page yet -->
-              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="#">Contact</a> <!-- No specific page yet -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="reviews.php">Barbers</a> <!-- reviews.php shows barbers, changed "Stylists" to "Barbers" -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500 opacity-50 cursor-default">Gallery</a> <!-- Disabled Gallery link -->
+              <a class="text-white text-sm font-medium leading-normal hover:text-orange-500" href="contact.php">Contact</a> <!-- Updated Contact link -->
             </div>
             <div class="flex items-center gap-4">
               <?php if (isset($_SESSION['user_id'])): ?>
@@ -100,73 +112,67 @@
               client leaves feeling confident and refreshed. With a blend of classic techniques and contemporary styles, we cater to diverse tastes and preferences. Our commitment
               to quality and customer satisfaction sets us apart, making Clipper the premier destination for men's grooming.
             </p>
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Meet Our Stylists</h2>
+            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Meet Our Barbers</h2>
             <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
               <div class="flex items-stretch p-4 gap-8">
-                <div class="flex h-full flex-1 flex-col gap-4 text-center rounded-lg min-w-32 pt-4">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full flex flex-col self-center w-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCbb_H2FLl2gfNNrL8dU4T7_Bz5xinj86CfzkXgzuX5Xe8Mvi8vzOE7deCDgxoKe5rBMnmZ8PydEw-u_eaHhcV9rr4X1ZOx2RPJ44S05sRcgP49Si-wCcBKkxmjUMLssl8jtY-IzA9k6R0Cg61ezwPYt0HqUNcIerHHPMhoa3cpB2jroR9eebUvFx1NioDGJQbcZ9SxamoLbE7bVIdn2nHQbnBJRSztTyvBQskW79AJq14Yb91WunvH9nChLzbWmHQlGLBbAfbwXg");'
-                  ></div>
-                  <div>
-                    <p class="text-white text-base font-medium leading-normal">Ethan</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">Master Barber</p>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 text-center rounded-lg min-w-32 pt-4">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full flex flex-col self-center w-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLS1XivgfGm52hxKF1mclB-PKFMRhRZoSznTq1JSVE79fnPJRrEb109XCGWPyORCEPCVHDc3XQeJSHOQvIa5g9Yic315lyyDnbp_TJLWYkgWJacLdSKq0ZaJlQGa5hgxc-iQ_1bZLaWizoHHbNFzNfjq4zbzaCpuzDS8-Tya0HBQKDnKJqL3zt57t9TrSVvYhQrT9oonFSbi0Qkdp5-GX98IO1eofSjTNIzXI6YXq90Pn8uYo1z3As3YkwACSNT2LNLnQCBZNaiQ");'
-                  ></div>
-                  <div>
-                    <p class="text-white text-base font-medium leading-normal">Noah</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">Senior Stylist</p>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 text-center rounded-lg min-w-32 pt-4">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full flex flex-col self-center w-full"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2DUanXXsACE91NBXAiY154RCOKGVJXoXrGnU3OjL0RdbgBJdc6zVqVthzlMDquV0gsqaaPkkT2du3m-2ZGVGiCEaPQM9AqU_RYxqa_pkULbgxky0C8KuwTrxXmyylSUg-v4Qhg_vvLvaqZsZvg1fz3rQD1uedYHIjVqp3QAW0VVze4ijVGRB9VX96IUlZbL2L4d0hfI2jl1nDVHhBQSztMyUqtTjjFYfJLnDuxY6kqdKYzhUBBwER-CnNL_AXEkbchbfy7RMN-g");'
-                  ></div>
-                  <div>
-                    <p class="text-white text-base font-medium leading-normal">Liam</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">Stylist</p>
-                  </div>
-                </div>
+                <?php
+                $barbers_api_url = 'php/api/get_barbers.php';
+                $barbers_data_available = false;
+                if (file_exists($barbers_api_url)) {
+                    $barbers_json = @file_get_contents($barbers_api_url);
+                    if ($barbers_json !== false) {
+                        $barbers = json_decode($barbers_json, true);
+                        if (json_last_error() === JSON_ERROR_NONE && empty($barbers['error']) && !empty($barbers)) {
+                            $barbers_data_available = true;
+                            foreach ($barbers as $barber) {
+                                $photo_url = !empty($barber['photo_url']) ? $barber['photo_url'] : 'https://via.placeholder.com/150/452e26/FFFFFF?text=No+Image';
+                                $specialty = !empty($barber['specialty']) ? $barber['specialty'] : 'Expert Barber';
+                                echo "<div class='flex h-full flex-1 flex-col gap-4 text-center rounded-lg min-w-32 pt-4'>";
+                                echo "  <div class='bg-center bg-no-repeat aspect-square bg-cover rounded-full flex flex-col self-center w-full' style='background-image: url(\"" . htmlspecialchars($photo_url) . "\");'></div>";
+                                echo "  <div>";
+                                echo "    <p class='text-white text-base font-medium leading-normal'>" . htmlspecialchars($barber['name']) . "</p>";
+                                echo "    <p class='text-[#c5a296] text-sm font-normal leading-normal'>" . htmlspecialchars($specialty) . "</p>";
+                                echo "  </div>";
+                                echo "</div>";
+                            }
+                        }
+                    }
+                }
+                if (!$barbers_data_available) {
+                    echo "<p class='text-white px-4 py-3'>Meet our talented team soon!</p>";
+                }
+                ?>
               </div>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Services</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCKOOBUY0IopcfAzX268o9pJS-8weQamDkgXIzpqr_3IbZ_rA4vsIQDg9BXKr7D13nY6IBlE8spvPr3pN5okvo86Ept1hHgh0dWyKgdhOrCnSCz5Y7V4uoX6WXzXH1xy59bWs4mtMY1dJ8vsX62E6u88jCCuoMWhxWrraizTV-URXGILIeUTSseHOVOQLx38e0HwoVzU7hUKI9XW_58W_jR3rBtmAZelV2LhWlMURRINtRbvNFVOsgDNIGAzTOokAb_jitFKmJkCw");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Classic Haircut</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Timeless cuts tailored to your style.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCaZF7Tg3SwgitS6cJgnBoJwpjrh-mNH47BJ6NdIMnDMs7lq90djYuJOju-hGOB6KTgEU6GAXwVBy4FjadLTJB6ILMDx1_cjJPSN9DF4dsIw2KqM2AN1fO-9LkvPHmf6iXwMarcPxPRbh3SyqPi2y6WPJyzNA3lCX-kwZ7A8y_oiqH0g1JKjqzgahmEz90MYjDXnySGC2EXLj5wVunWTvRQmARkqGG4X9DghB1f5IBVtYY5ATvRqCmNwupv6Z_d_y1vEGLAcSd7Kw");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Beard Trim &amp; Shape</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">Precision trimming for a sharp look.</p>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3 pb-3">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCgMoPljTtdY1ULZiYpSiC6lZGFO8a04OSF5tpfdfFK1SDD0LejGKENw1VHINOJpp-6Gf6AZ6to8F5F80roRoExBWy-WiHtGpTAbPOvQODDgd__eLB1JpQfEOnxnpBVMDFafXhS_yDx56F6Y4NKN3hJxuUvN0IrR_D1Qg2QRkINXixes1ziRRI2Np0lrhW1775vspdm3QV-dul108azDrW5FTCGZTFwrkhO6FShH2Jta4RLm0b8TzqhZkgJSN6EpMIPDd0MniNnQ");'
-                ></div>
-                <div>
-                  <p class="text-white text-base font-medium leading-normal">Hot Towel Shave</p>
-                  <p class="text-[#c5a296] text-sm font-normal leading-normal">A luxurious, traditional shaving experience.</p>
-                </div>
-              </div>
+              <?php
+                $services_api_url = 'php/api/get_services.php';
+                $services_data_available = false;
+                if (file_exists($services_api_url)) {
+                    $services_json = @file_get_contents($services_api_url);
+                    if ($services_json !== false) {
+                        $services = json_decode($services_json, true);
+                        if (json_last_error() === JSON_ERROR_NONE && empty($services['error']) && !empty($services)) {
+                            $services_data_available = true;
+                            $featured_services = array_slice($services, 0, 3); // Get first 3 services
+                            foreach ($featured_services as $service) {
+                                $service_image_placeholder = 'https://via.placeholder.com/200/DB5224/FFFFFF?text=Great+Service';
+                                echo "<div class='flex flex-col gap-3 pb-3'>";
+                                echo "  <div class='w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl' style='background-image: url(\"" . htmlspecialchars($service_image_placeholder) . "\");'></div>";
+                                echo "  <div>";
+                                echo "    <p class='text-white text-base font-medium leading-normal'>" . htmlspecialchars($service['name']) . "</p>";
+                                echo "    <p class='text-[#c5a296] text-sm font-normal leading-normal'>" . htmlspecialchars($service['description']) . "</p>";
+                                echo "  </div>";
+                                echo "</div>";
+                            }
+                        }
+                    }
+                }
+                if (!$services_data_available) {
+                     echo "<p class='text-white px-4 py-3 col-span-full'>Explore our range of services soon!</p>";
+                }
+              ?>
             </div>
           </div>
         </div>
@@ -174,9 +180,9 @@
           <div class="flex max-w-[960px] flex-1 flex-col">
             <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
               <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Contact Us</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Privacy Policy</a>
-                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="#">Terms of Service</a>
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 hover:text-orange-500" href="contact.php">Contact Us</a> <!-- Updated Contact Us link -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Privacy Policy</a> <!-- Disabled Privacy Policy -->
+                <a class="text-[#c5a296] text-base font-normal leading-normal min-w-40 opacity-50 cursor-default">Terms of Service</a> <!-- Disabled Terms of Service -->
               </div>
               <div class="flex flex-wrap justify-center gap-4">
                 <a href="#">

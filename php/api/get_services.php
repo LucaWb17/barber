@@ -5,19 +5,21 @@ require_once '../config.php';
 // Set content type to JSON
 header('Content-Type: application/json');
 
-// Fallback DB credentials if not defined in config.php
-if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
-if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
-if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
-if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db'); // Assuming 'clipper_db' or your actual DB name
+// Check if DB constants are defined
+if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database configuration is missing. Please set up config.php.']);
+    exit();
+}
 
 // Establish Database Connection
 $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 // Check Connection
 if ($conn->connect_error) {
+    error_log("Database connection failed in get_services.php: " . $conn->connect_error);
     http_response_code(500); // Internal Server Error
-    echo json_encode(['error' => "Connection failed: " . $conn->connect_error]);
+    echo json_encode(['error' => "A server error occurred while fetching services. Please try again later."]);
     exit();
 }
 
@@ -34,8 +36,9 @@ if ($result) {
     }
     $result->free(); // Free result set
 } else {
+    error_log("Database query failed in get_services.php: " . $conn->error);
     http_response_code(500); // Internal Server Error
-    echo json_encode(['error' => "Database query failed: " . $conn->error]);
+    echo json_encode(['error' => "A server error occurred while fetching services. Please try again later."]);
     $conn->close();
     exit();
 }
