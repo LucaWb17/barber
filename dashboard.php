@@ -68,7 +68,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                     <p class="text-white text-sm font-medium leading-normal">Services</p>
                   </a>
-                  <a href="reviews.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]"> <!-- Was Staff -->
+                  <a href="reviews.php" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#452e26]">
                     <div class="text-white" data-icon="Users" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -76,7 +76,7 @@ if (!isset($_SESSION['user_id'])) {
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-white text-sm font-medium leading-normal">Staff</p>
+                    <p class="text-white text-sm font-medium leading-normal">Barbers</p> <!-- Changed "Staff" to "Barbers" -->
                   </a>
                   <!-- Availability link removed -->
                   <!-- Login/Logout Link -->
@@ -114,18 +114,66 @@ if (!isset($_SESSION['user_id'])) {
               <h1 class="text-white text-xl font-semibold">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
             </div>
 
+            <?php
+            // Fetch statistics
+            $total_appointments_completed = 0;
+            $total_revenue = 0.00;
+            $average_rating = "N/A";
+            $stats_error = null;
+
+            // Temp connection for stats - this will be separate from the appointments list connection later in the file
+            $stats_conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+            if ($stats_conn->connect_error) {
+                error_log("Dashboard Stats - DB Connection failed: " . $stats_conn->connect_error);
+                $stats_error = "Could not load statistics due to a server issue.";
+            } else {
+                // Total Completed/Confirmed Appointments
+                $result_total_app = $stats_conn->query("SELECT COUNT(*) AS total_appointments FROM appointments WHERE status = 'completed' OR status = 'confirmed'");
+                if ($result_total_app) {
+                    $total_appointments_completed = $result_total_app->fetch_assoc()['total_appointments'] ?? 0;
+                } else {
+                    error_log("Dashboard Stats - Failed to fetch total appointments: " . $stats_conn->error);
+                    $stats_error = "Could not load total appointments.";
+                }
+
+                // Total Revenue
+                $result_revenue = $stats_conn->query("SELECT SUM(s.price) AS total_revenue FROM appointments a JOIN services s ON a.service_id = s.id WHERE a.status = 'completed' OR a.status = 'confirmed'");
+                if ($result_revenue) {
+                    $total_revenue = $result_revenue->fetch_assoc()['total_revenue'] ?? 0.00;
+                } else {
+                    error_log("Dashboard Stats - Failed to fetch total revenue: " . $stats_conn->error);
+                    if(!$stats_error) $stats_error = "Could not load total revenue."; else $stats_error .= " Could not load total revenue.";
+                }
+
+                // Average Rating
+                $result_avg_rating = $stats_conn->query("SELECT AVG(rating) AS average_rating FROM reviews");
+                if ($result_avg_rating) {
+                    $avg_rating_val = $result_avg_rating->fetch_assoc()['average_rating'];
+                    if ($avg_rating_val !== null) {
+                        $average_rating = number_format((float)$avg_rating_val, 1);
+                    }
+                } else {
+                    error_log("Dashboard Stats - Failed to fetch average rating: " . $stats_conn->error);
+                     if(!$stats_error) $stats_error = "Could not load average rating."; else $stats_error .= " Could not load average rating.";
+                }
+                $stats_conn->close();
+            }
+            ?>
             <div class="flex flex-wrap gap-4 p-4">
+              <?php if ($stats_error): ?>
+                <div class="col-span-full text-red-500 p-4"><?php echo htmlspecialchars($stats_error); ?></div>
+              <?php endif; ?>
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#634136]">
-                <p class="text-white text-base font-medium leading-normal">Total Appointments</p>
-                <p class="text-white tracking-light text-2xl font-bold leading-tight">120</p>
+                <p class="text-white text-base font-medium leading-normal">Total Completed Appointments</p>
+                <p class="text-white tracking-light text-2xl font-bold leading-tight"><?php echo htmlspecialchars($total_appointments_completed); ?></p>
               </div>
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#634136]">
                 <p class="text-white text-base font-medium leading-normal">Total Revenue</p>
-                <p class="text-white tracking-light text-2xl font-bold leading-tight">$5,500</p>
+                <p class="text-white tracking-light text-2xl font-bold leading-tight">$<?php echo htmlspecialchars(number_format((float)$total_revenue, 2)); ?></p>
               </div>
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#634136]">
                 <p class="text-white text-base font-medium leading-normal">Average Rating</p>
-                <p class="text-white tracking-light text-2xl font-bold leading-tight">4.8</p>
+                <p class="text-white tracking-light text-2xl font-bold leading-tight"><?php echo htmlspecialchars($average_rating); ?></p>
               </div>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Your Upcoming Appointments</h2>
@@ -133,16 +181,21 @@ if (!isset($_SESSION['user_id'])) {
               <?php
               require_once 'php/config.php'; // Path relative to root
 
-              // Fallback DB credentials if not defined in config.php
-              if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
-              if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
-              if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
-              if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db');
+              // Check if DB constants are defined
+              if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+                  // For HTML pages, you might want to display a more user-friendly error message.
+                  // You could redirect to an error page or display a message directly.
+                  die("<div class='p-4 text-red-500'>Database configuration is missing. Please contact the site administrator or set up your php/config.php file.</div>");
+              }
 
+              // Establish Database Connection
               $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+              $db_error_occurred = false;
 
               if ($conn->connect_error) {
-                  echo "<p class='text-red-500'>Database connection failed: " . htmlspecialchars($conn->connect_error) . "</p>";
+                  error_log("Dashboard - DB Connection failed: " . $conn->connect_error);
+                  echo "<p class='text-red-500'>Could not load appointments due to a server issue. Please try again later.</p>";
+                  $db_error_occurred = true;
               } else {
                   $user_id = $_SESSION['user_id'];
                   $sql = "SELECT
@@ -160,7 +213,7 @@ if (!isset($_SESSION['user_id'])) {
                               services s ON a.service_id = s.id
                           WHERE
                               a.user_id = ? AND
-                              a.status = 'scheduled' AND
+                              (a.status = 'scheduled' OR a.status = 'confirmed') AND
                               a.appointment_datetime >= NOW()
                           ORDER BY
                               a.appointment_datetime ASC";
@@ -193,22 +246,108 @@ if (!isset($_SESSION['user_id'])) {
                               echo "<td class='px-4 py-3'>" . htmlspecialchars($app['service_name']) . "</td>";
                               echo "<td class='px-4 py-3'>" . htmlspecialchars($app['duration_minutes']) . " min</td>";
                               echo "<td class='px-4 py-3'>" . htmlspecialchars(ucfirst($app['status'])) . "</td>";
-                              echo "<td class='px-4 py-3'><button class='text-red-500 hover:text-red-700 text-xs'>Cancel</button></td>"; // Placeholder button
+                              echo "<td class='px-4 py-3'><button class='cancel-appointment-btn text-red-500 hover:text-red-700 text-xs' data-appointment-id='" . htmlspecialchars($app['appointment_id']) . "'>Cancel</button></td>";
                               echo "</tr>";
                           }
                           echo "</tbody></table></div>";
                       } else {
-                          echo "<div id='upcomingAppointmentsContent' class='text-white p-4 border border-[#634136] rounded-xl'>";
+                          echo "<div id='upcomingAppointmentsContent' class='text-white p-4 border border-[#634136] rounded-xl'>"; // This div can also be used for messages
                           echo "<p>You have no upcoming appointments.</p>";
                           echo "</div>";
                       }
                   } else {
-                      echo "<p class='text-red-500'>Error preparing statement: " . htmlspecialchars($conn->error) . "</p>";
+                      error_log("Dashboard - DB prepare statement failed: " . $conn->error);
+                      echo "<p class='text-red-500'>Could not load appointments due to a server issue. Please try again later.</p>";
+                      $db_error_occurred = true; // To prevent further DB operations if conn was initially ok
                   }
-                  $conn->close();
+                  if (!$db_error_occurred) { // Only close if $conn was successfully established
+                    $conn->close();
+                  }
               }
               ?>
             </div>
+            <div id="cancelAppointmentMessage" class="px-4 py-2 text-center"></div> <!-- Div for cancellation messages -->
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const cancelButtons = document.querySelectorAll('.cancel-appointment-btn');
+                const cancelMessageDiv = document.getElementById('cancelAppointmentMessage');
+
+                cancelButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const appointmentId = this.dataset.appointmentId;
+
+                        if (!confirm('Are you sure you want to cancel this appointment?')) {
+                            return;
+                        }
+
+                        cancelMessageDiv.textContent = 'Processing...';
+                        cancelMessageDiv.className = 'px-4 py-2 text-center text-gray-300'; // Neutral color
+
+                        const formData = new FormData();
+                        formData.append('appointment_id', appointmentId);
+
+                        fetch('php/api/cancel_appointment.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                cancelMessageDiv.textContent = data.message;
+                                cancelMessageDiv.className = 'px-4 py-2 text-center text-green-500';
+                                // Visually update the row:
+                                // Option 1: Remove the row
+                                // this.closest('tr').remove();
+                                // Option 2: Change status text and disable button
+                                const row = this.closest('tr');
+                                if (row) {
+                                    const statusCell = row.cells[4]; // Assuming status is the 5th cell
+                                    if (statusCell) {
+                                        statusCell.textContent = 'Cancelled';
+                                    }
+                                    this.textContent = 'Cancelled';
+                                    this.disabled = true;
+                                    this.classList.remove('text-red-500', 'hover:text-red-700');
+                                    this.classList.add('text-gray-400', 'cursor-not-allowed');
+                                }
+                                // If all appointments are cancelled, update the main content message
+                                const appointmentsTable = document.querySelector('.min-w-full');
+                                if (appointmentsTable && appointmentsTable.tBodies[0] && appointmentsTable.tBodies[0].rows.length > 0) {
+                                    let allCancelled = true;
+                                    for (let r of appointmentsTable.tBodies[0].rows) {
+                                        if (r.cells[4] && r.cells[4].textContent.toLowerCase() !== 'cancelled') {
+                                            allCancelled = false;
+                                            break;
+                                        }
+                                    }
+                                    if (allCancelled) {
+                                        const upcomingContentDiv = document.getElementById('upcomingAppointmentsContent');
+                                        if (upcomingContentDiv) {
+                                            upcomingContentDiv.innerHTML = "<p>You have no upcoming appointments.</p>";
+                                        }
+                                         // Hide the table if it exists and all are cancelled
+                                        if(appointmentsTable.parentElement.classList.contains('overflow-x-auto')) {
+                                            appointmentsTable.parentElement.style.display = 'none';
+                                        }
+                                    }
+                                }
+
+
+                            } else {
+                                cancelMessageDiv.textContent = data.error || 'Failed to cancel appointment.';
+                                cancelMessageDiv.className = 'px-4 py-2 text-center text-red-500';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Cancellation error:', error);
+                            cancelMessageDiv.textContent = 'An error occurred. Please try again.';
+                            cancelMessageDiv.className = 'px-4 py-2 text-center text-red-500';
+                        });
+                    });
+                });
+            });
+            </script>
             <!-- Original table structure for upcoming appointments can be dynamically populated or removed if not used directly -->
             <!-- For now, I'll comment out the static table to avoid confusion with the placeholder -->
               <!--
@@ -324,107 +463,74 @@ if (!isset($_SESSION['user_id'])) {
               </style>
             </div>
             <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recent Reviews</h2>
-            <div class="flex flex-col gap-8 overflow-x-hidden bg-[#211612] p-4">
-              <div class="flex flex-col gap-3 bg-[#211612]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArqfh80mDSfC1g7VFdzwrVik1LztnQ0hbJDpaIl1zjEcInCNb9Mcm0QG7kKjdwAkuMlY4wHiq5iN1TiNWo1n7SFv2HAQwlntBXU45AsxBs0OS3pyp1jboV1xvDWaaVeAdbrLK8znwwfQiLVRVeEqnKw9iUtt8zmGmp-jpmdOw7pFOgJPYruVrVmjnskwuTZdoREZfIaD66sFTTNX6gga53uvh0gc69C7cBDKJbj3lWQYKeGOQ7ELYOiDbQgtCrlqFfZM2RHPxKww");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-white text-base font-medium leading-normal">Ava Harper</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">2024-07-19</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-white text-base font-normal leading-normal">Great haircut and friendly service! Alex did an amazing job.</p>
-              </div>
-              <div class="flex flex-col gap-3 bg-[#211612]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZN2jIb_D6m_IVd-j6rDG_FErr_i9ykE70cPS5IaG4oPx3oaCbK5WA6Dx5IVC62IyctTj9tyAnQ0ZrWNf5O_9RRW6toDr1-0SdFV_1gCaK_dEAdY55YfZUvC57n-ZSR3hRecMFlo23g-wQ0Pt1cjQJKZQRzoOpdc2P40rAJypTvo6L5E_DbUUL4sI55649zXu8fUy5xPmVnXDak9X59FEaMph02t3fXv9TBlc4Q91R6aNLZhJdr8aoV8T-6_rOqZRSBvPIzLMThg");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-white text-base font-medium leading-normal">Lucas Hayes</p>
-                    <p class="text-[#c5a296] text-sm font-normal leading-normal">2024-07-18</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#db5224]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#87594a]" data-icon="Star" data-size="20px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M239.2,97.29a16,16,0,0,0-13.81-11L166,81.17,142.72,25.81h0a15.95,15.95,0,0,0-29.44,0L90.07,81.17,30.61,86.32a16,16,0,0,0-9.11,28.06L66.61,153.8,53.09,212.34a16,16,0,0,0,23.84,17.34l51-31,51.11,31a16,16,0,0,0,23.84-17.34l-13.51-58.6,45.1-39.36A16,16,0,0,0,239.2,97.29Zm-15.22,5-45.1,39.36a16,16,0,0,0-5.08,15.71L187.35,216v0l-51.07-31a15.9,15.9,0,0,0-16.54,0l-51,31h0L82.2,157.4a16,16,0,0,0-5.08-15.71L32,102.35a.37.37,0,0,1,0-.09l59.44-5.14a16,16,0,0,0,13.35-9.75L128,32.08l23.2,55.29a16,16,0,0,0,13.35,9.75L224,102.26S224,102.32,224,102.33Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-white text-base font-normal leading-normal">Ryan was professional and did a good job with my beard trim. Will be back.</p>
-              </div>
+            <div class="flex flex-col gap-4 overflow-x-hidden bg-[#211612] p-4">
+                <?php
+                $reviews_api_url = 'php/api/get_reviews.php';
+                $reviews_error_message = null;
+                $recent_reviews = [];
+
+                if (file_exists($reviews_api_url)) {
+                    $reviews_json = @file_get_contents($reviews_api_url);
+                    if ($reviews_json === false) {
+                        $reviews_error_message = "Error: Could not fetch recent reviews.";
+                        error_log("Dashboard - file_get_contents failed for get_reviews.php");
+                    } else {
+                        $all_reviews = json_decode($reviews_json, true);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            $reviews_error_message = "Error: Could not process reviews data.";
+                            error_log("Dashboard - JSON Decode Error for reviews: " . json_last_error_msg());
+                        } elseif (isset($all_reviews['error'])) {
+                            $reviews_error_message = "Error from reviews API: " . htmlspecialchars($all_reviews['error']);
+                        } elseif (empty($all_reviews)) {
+                            $reviews_error_message = "No recent reviews available.";
+                        } else {
+                            $recent_reviews = array_slice($all_reviews, 0, 2); // Get first 2 reviews
+                        }
+                    }
+                } else {
+                    $reviews_error_message = "Error: Reviews API endpoint not found.";
+                    error_log("Dashboard - get_reviews.php not found at " . $reviews_api_url);
+                }
+
+                if (!empty($recent_reviews)) {
+                    foreach ($recent_reviews as $review) {
+                        $user_avatar_text = strtoupper(substr(htmlspecialchars($review['user_name'] ?? 'A'), 0, 1));
+                        $review_date_formatted = htmlspecialchars(date("F j, Y", strtotime($review['review_date'])));
+                        $rating = (int)$review['rating'];
+                ?>
+                        <div class="flex flex-col gap-3 bg-[#211612] p-3 border-b border-b-[#452e26]">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                     style='background-image: url("https://via.placeholder.com/40/DB5224/FFFFFF?text=<?php echo $user_avatar_text; ?>");'></div>
+                                <div class="flex-1">
+                                    <p class="text-white text-base font-medium leading-normal"><?php echo htmlspecialchars($review['user_name'] ?? 'Anonymous'); ?></p>
+                                    <p class="text-[#c5a296] text-sm font-normal leading-normal"><?php echo $review_date_formatted; ?></p>
+                                    <?php if (!empty($review['barber_name'])): ?>
+                                        <p class='text-[#c5a296] text-xs'>For: <?php echo htmlspecialchars($review['barber_name']); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="flex gap-0.5">
+                                <?php for ($i = 0; $i < 5; $i++): ?>
+                                    <div class="text-<?php echo ($i < $rating) ? '[#db5224]' : '[#87594a]'; ?>" data-icon="Star" data-size="20px" data-weight="<?php echo ($i < $rating) ? 'fill' : 'regular'; ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <?php if ($i < $rating): ?>
+                                                <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                            <?php else: ?>
+                                                <path d="M239.2,97.29a16,16,0,0,0-13.81-11L166,81.17,142.72,25.81h0a15.95,15.95,0,0,0-29.44,0L90.07,81.17,30.61,86.32a16,16,0,0,0-9.11,28.06L66.61,153.8,53.09,212.34a16,16,0,0,0,23.84,17.34l51-31,51.11,31a16,16,0,0,0,23.84-17.34l-13.51-58.6,45.1-39.36A16,16,0,0,0,239.2,97.29Zm-15.22,5-45.1,39.36a16,16,0,0,0-5.08,15.71L187.35,216v0l-51.07-31a15.9,15.9,0,0,0-16.54,0l-51,31h0L82.2,157.4a16,16,0,0,0-5.08-15.71L32,102.35a.37.37,0,0,1,0-.09l59.44-5.14a16,16,0,0,0,13.35-9.75L128,32.08l23.2,55.29a16,16,0,0,0,13.35,9.75L224,102.26S224,102.32,224,102.33Z"></path>
+                                            <?php endif; ?>
+                                        </svg>
+                                    </div>
+                                <?php endfor; ?>
+                            </div>
+                            <p class="text-white text-base font-normal leading-normal"><?php echo nl2br(htmlspecialchars($review['comment'])); ?></p>
+                        </div>
+                <?php
+                    } // end foreach
+                } else {
+                    echo "<p class='text-white px-4 py-3'>" . ($reviews_error_message ?: "No recent reviews.") . "</p>";
+                }
+                ?>
             </div>
           </div>
         </div>

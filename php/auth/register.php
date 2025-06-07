@@ -43,22 +43,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // ---- Database Operations ----
 
-    // Define DB constants if not already defined (e.g. by config.php)
-    // This is a fallback in case config.php is not properly set up,
-    // allowing the script to proceed further for testing (though DB connection will likely fail).
-    if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
-    if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
-    if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
-    if (!defined('DB_NAME')) define('DB_NAME', 'clipper_db');
+    // Check if DB constants are defined
+    if (!defined('DB_HOST') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_NAME')) {
+        $_SESSION['error'] = "Database configuration is missing. Please contact the site administrator.";
+        header("Location: ../../createanaccount.php");
+        exit();
+    }
 
     // Establish Database Connection
     $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
     // Check Connection
     if ($conn->connect_error) {
-        $_SESSION['error'] = "Connection failed: " . $conn->connect_error . ". Please check config.php and ensure database server is running.";
-        // Optionally log the detailed error to a server log for diagnostics
-        // error_log("MySQL Connection Error: " . $conn->connect_error);
+        error_log("Registration - DB Connection failed: " . $conn->connect_error);
+        $_SESSION['error'] = "Registration failed due to a server issue. Please try again later.";
         header("Location: ../../createanaccount.php");
         exit();
     }
@@ -66,14 +64,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if Email Already Exists
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
     if (!$stmt) {
-        $_SESSION['error'] = "Database error (prepare select): " . $conn->error;
+        error_log("Registration - DB prepare select (email check) failed: " . $conn->error);
+        $_SESSION['error'] = "Registration failed due to a server issue. Please try again later.";
         $conn->close();
         header("Location: ../../createanaccount.php");
         exit();
     }
     $stmt->bind_param("s", $email);
     if (!$stmt->execute()) {
-        $_SESSION['error'] = "Database error (execute select): " . $stmt->error;
+        error_log("Registration - DB execute select (email check) failed: " . $stmt->error);
+        $_SESSION['error'] = "Registration failed due to a server issue. Please try again later.";
         $stmt->close();
         $conn->close();
         header("Location: ../../createanaccount.php");
@@ -92,7 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hash Password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     if ($hashed_password === false) {
-        $_SESSION['error'] = "Failed to hash password.";
+        error_log("Registration - password_hash failed.");
+        $_SESSION['error'] = "Registration failed due to a security issue. Please try again later.";
         $conn->close();
         header("Location: ../../createanaccount.php");
         exit();
@@ -101,7 +102,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert New User
     $stmt = $conn->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
     if (!$stmt) {
-        $_SESSION['error'] = "Database error (prepare insert): " . $conn->error;
+        error_log("Registration - DB prepare insert failed: " . $conn->error);
+        $_SESSION['error'] = "Registration failed due to a server issue. Please try again later.";
         $conn->close();
         header("Location: ../../createanaccount.php");
         exit();
@@ -117,8 +119,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     } else {
         // Insertion failed
-        $_SESSION['error'] = "Registration failed. Please try again. Error: " . $stmt->error;
-        // Optionally log the detailed error: error_log("MySQL Insert Error: " . $stmt->error);
+        error_log("Registration - DB execute insert failed: " . $stmt->error);
+        $_SESSION['error'] = "Registration failed due to a server issue. Please try again.";
         $stmt->close();
         $conn->close();
         header("Location: ../../createanaccount.php");
